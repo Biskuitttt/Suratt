@@ -212,10 +212,12 @@ const Polaroid = () => {
 };
 
 const FilmRoll = () => {
+  const images = ["image1.png", "image2.png", "image3.png", "image4.png", "image5.png", "image6.png", "image7.png", "image8.png", "image9.png", "image10.png", "image11.png",
+    "image12.png", "image13.png", "image14.png", "image15.png"];
   const photos = Array.from({ length: 15 }, (_, index) => ({
     id: index + 1,
     placeholder: `Photo ${index + 1}`,
-    imageUrl: index === 0 ? "image1.png" : null
+    imageUrl: index < images.length ? images[index] : null
   }));
 
   return (
