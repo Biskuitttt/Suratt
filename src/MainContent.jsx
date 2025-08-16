@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 const FallingPolaroids = () => {
   const [polaroids, setPolaroids] = useState([]);
   const [activeColumns, setActiveColumns] = useState(new Set());
+  
+  // Menggunakan array gambar yang tersedia
+  const images = Array.from({ length: 2 }, (_, index) => `/image${index + 1}.png`);
 
   useEffect(() => {
     const generatePolaroid = () => {
@@ -26,11 +29,13 @@ const FallingPolaroids = () => {
 
       const newPolaroid = {
         id: Date.now(),
-        left: (column * (100 / columns)) + (Math.random() * 5), // Sedikit variasi
-        rotate: -10 + Math.random() * 20, // Rotasi lebih subtle
+        left: (column * (100 / columns)) + (Math.random() * 5),
+        rotate: -10 + Math.random() * 20,
         scale: 0.5 + Math.random() * 0.2,
-        duration: 8 + Math.random() * 4, // Durasi lebih konsisten
-        column
+        duration: 8 + Math.random() * 4,
+        column,
+        // Pilih gambar random dari array
+        image: images[Math.floor(Math.random() * images.length)]
       };
       
       setPolaroids(prev => [...prev, newPolaroid]);
@@ -64,12 +69,18 @@ const FallingPolaroids = () => {
           }}
         >
           <div 
-            className="w-32 h-40 bg-white/30 backdrop-blur-sm p-2 shadow-xl rounded"
+            className="w-32 h-40 bg-white/30 backdrop-blur-sm p-2 shadow-xl rounded overflow-hidden"
             style={{
               transform: `rotate(${polaroid.rotate}deg) scale(${polaroid.scale})`,
             }}
           >
-            <div className="w-full h-28 bg-gray-100/50"></div>
+            <div className="w-full h-28 bg-gray-100/50 overflow-hidden">
+              <img 
+                src={polaroid.image}
+                alt="Polaroid"
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div className="mt-2 h-8 bg-white/50"></div>
           </div>
 
@@ -172,21 +183,19 @@ const Polaroid = () => {
               height: '150px',
               backgroundColor: '#f0f0f0',
               borderRadius: '4px',
-              backgroundImage: 'url("/api/placeholder/170/150")',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              overflow: 'hidden',
               border: '1px solid #ddd',
             }}
           >
-            {/* Placeholder jika tidak ada gambar */}
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="1">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <circle cx="9" cy="9" r="2"/>
-              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-            </svg>
+            <img 
+              src="/image2.png"
+              alt="Special Photo"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
           </div>
           <div style={{ 
             textAlign: 'center', 
