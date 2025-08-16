@@ -5,8 +5,9 @@ const FallingPolaroids = () => {
   const [polaroids, setPolaroids] = useState([]);
   const [activeColumns, setActiveColumns] = useState(new Set());
   
-  // Menggunakan array gambar yang tersedia
-  const images = Array.from({ length: 2 }, (_, index) => `/image${index + 1}.png`);
+  // Menggunakan array gambar yang sama dengan FilmRoll
+  const images = ["/image1.png", "/image2.png", "/image3.png", "/image4.png", "/image5.png", "/image6.png", "/image7.png", "/image8.png", "/image9.png", "/image10.png", "/image11.png",
+    "/image12.png", "/image13.png", "/image14.png", "/image15.png"];
 
   useEffect(() => {
     const generatePolaroid = () => {
@@ -319,8 +320,8 @@ const Polaroid = () => {
 };
 
 const FilmRoll = () => {
-  const images = ["image1.png", "image2.png", "image3.png", "image4.png", "image5.png", "image6.png", "image7.png", "image8.png", "image9.png", "image10.png", "image11.png",
-    "image12.png", "image13.png", "image14.png", "image15.png"];
+  const images = ["/image1.png", "/image2.png", "/image3.png", "/image4.png", "/image5.png", "/image6.png", "/image7.png", "/image8.png", "/image9.png", "/image10.png", "/image11.png",
+    "/image12.png", "/image13.png", "/image14.png", "/image15.png"];
   const photos = Array.from({ length: 15 }, (_, index) => ({
     id: index + 1,
     placeholder: `Photo ${index + 1}`,
@@ -403,6 +404,12 @@ function MainContent() {
       {/* Falling Polaroids in background */}
       <FallingPolaroids />
       
+      {/* Background layer behind film roll */}
+      <div className="film-roll-backdrop fixed inset-0 pointer-events-none z-4">
+        <div className="w-full h-full bg-gradient-to-b from-amber-100/5 to-stone-800/10"></div>
+      </div>
+
+      {/* Film roll layer */}
       <div className="film-roll-background fixed inset-0 pointer-events-none z-5">
         <FilmRoll />
       </div>
