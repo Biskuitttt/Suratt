@@ -288,15 +288,18 @@ const FilmRoll = () => {
 function MainContent() {
   return (
     <div className="relative">
-      <div className="film-roll-background fixed inset-0 pointer-events-none z-0">
+      {/* Dark background overlay */}
+      <div className="fixed inset-0 bg-slate-900 z-0"></div>
+      
+      <div className="film-roll-background fixed inset-0 pointer-events-none z-5">
         <FilmRoll />
       </div>
     
       <div className="relative z-10 min-h-screen">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16">
-            <h1 className="text-6xl font-bold text-stone-800 mb-4">Creative Studio</h1>
-            <p className="text-xl text-stone-600">Where stories come to life</p>
+            <h1 className="text-6xl font-bold text-stone-100 mb-4 hero-title">Creative Studio</h1>
+            <p className="text-xl text-stone-300 hero-subtitle">Where stories come to life</p>
           </div>
         </div>
       </div>
