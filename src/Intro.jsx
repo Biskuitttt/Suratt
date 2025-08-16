@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import './Intro.css';
+
 // BlurText Component
 const BlurText = ({
   text = '',
@@ -40,12 +40,14 @@ const BlurText = ({
   }, [threshold, rootMargin]);
 
   return (
-    <p ref={ref} className={`blur-text ${className} flex flex-wrap justify-center`}>
+    <p ref={ref} className={`blur-text ${className}`} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
       {elements.map((segment, index) => (
         <span
           key={index}
-          className="inline-block transition-all duration-700 ease-out will-change-transform"
           style={{
+            display: 'inline-block',
+            transition: 'all 0.7s ease-out',
+            willChange: 'transform, filter, opacity',
             filter: inView ? 'blur(0px)' : 'blur(10px)',
             opacity: inView ? 1 : 0,
             transform: inView 
@@ -98,8 +100,28 @@ function Intro({ onComplete }) {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center fixed inset-0 z-50">
-      <div className="text-center w-full max-w-4xl px-8">
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#000000',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999
+      }}
+    >
+      <div 
+        style={{
+          textAlign: 'center',
+          width: '100%',
+          maxWidth: '1024px',
+          padding: '0 2rem'
+        }}
+      >
         {currentTextIndex < introTexts.length && (
           <BlurText
             key={textKey}

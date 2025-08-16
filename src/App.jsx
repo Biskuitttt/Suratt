@@ -7,18 +7,33 @@ import MainContent from './MainContent';
 
 function App() {
   const [showIntro, setShowIntro] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleIntroComplete = () => {
-    setShowIntro(false);
+    // Mulai transisi
+    setIsTransitioning(true);
+    
+    // Setelah fade out selesai, ganti ke main content
+    setTimeout(() => {
+      setShowIntro(false);
+      setIsTransitioning(false);
+    }, 800); // 800ms untuk fade out
   };
 
   return (
     <div className="App">
-      {showIntro ? (
-        <Intro onComplete={handleIntroComplete} />
-      ) : (
-        <MainContent />
-      )}
+      <div 
+        style={{
+          transition: 'opacity 0.8s ease-in-out',
+          opacity: isTransitioning ? 0 : 1,
+        }}
+      >
+        {showIntro ? (
+          <Intro onComplete={handleIntroComplete} />
+        ) : (
+          <MainContent />
+        )}
+      </div>
     </div>
   );
 }
