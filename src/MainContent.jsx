@@ -1,5 +1,103 @@
 import React, { useState, useEffect } from 'react';
 
+// Falling Polaroids Component
+const FallingPolaroids = () => {
+  const [polaroids, setPolaroids] = useState([]);
+  const [activeColumns, setActiveColumns] = useState(new Set());
+
+  useEffect(() => {
+    const generatePolaroid = () => {
+      const columns = 6; // Kurangi jumlah kolom
+      let availableColumns = [];
+      
+      // Cari kolom yang tersedia
+      for (let i = 0; i < columns; i++) {
+        if (!activeColumns.has(i)) {
+          availableColumns.push(i);
+        }
+      }
+
+      // Jika terlalu banyak polaroid aktif, skip
+      if (availableColumns.length === 0) return;
+
+      // Pilih kolom random dari yang tersedia
+      const column = availableColumns[Math.floor(Math.random() * availableColumns.length)];
+      setActiveColumns(prev => new Set([...prev, column]));
+
+      const newPolaroid = {
+        id: Date.now(),
+        left: (column * (100 / columns)) + (Math.random() * 5), // Sedikit variasi
+        rotate: -10 + Math.random() * 20, // Rotasi lebih subtle
+        scale: 0.5 + Math.random() * 0.2,
+        duration: 8 + Math.random() * 4, // Durasi lebih konsisten
+        column
+      };
+      
+      setPolaroids(prev => [...prev, newPolaroid]);
+
+      setTimeout(() => {
+        setPolaroids(prev => prev.filter(p => p.id !== newPolaroid.id));
+        // Bebaskan kolom saat polaroid selesai
+        setActiveColumns(prev => {
+          const next = new Set(prev);
+          next.delete(newPolaroid.column);
+          return next;
+        });
+      }, newPolaroid.duration * 1000);
+    };
+
+    // Generate polaroids dengan interval yang lebih teratur
+    const interval = setInterval(generatePolaroid, 3000); // Interval lebih lama
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-1">
+      {polaroids.map(polaroid => (
+        <div
+          key={polaroid.id}
+          style={{
+            position: 'absolute',
+            left: `${polaroid.left}%`,
+            top: '-100px',
+            animation: `falling-${polaroid.id} ${polaroid.duration}s linear forwards`
+          }}
+        >
+          <div 
+            className="w-32 h-40 bg-white/30 backdrop-blur-sm p-2 shadow-xl rounded"
+            style={{
+              transform: `rotate(${polaroid.rotate}deg) scale(${polaroid.scale})`,
+            }}
+          >
+            <div className="w-full h-28 bg-gray-100/50"></div>
+            <div className="mt-2 h-8 bg-white/50"></div>
+          </div>
+
+          <style jsx>{`
+            @keyframes falling-${polaroid.id} {
+              0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+              }
+              5% {
+                opacity: 1;
+              }
+              90% {
+                opacity: 1;
+                transform: translateY(${window.innerHeight * 0.8}px) rotate(${polaroid.rotate * 1.5}deg);
+              }
+              100% {
+                transform: translateY(${window.innerHeight + 200}px) rotate(${polaroid.rotate * 2}deg);
+                opacity: 0;
+              }
+            }
+          `}</style>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // Polaroid Component
 const Polaroid = () => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -292,6 +390,9 @@ function MainContent() {
     <div className="relative">
       {/* Dark background overlay */}
       <div className="fixed inset-0 bg-slate-900 z-0"></div>
+      
+      {/* Falling Polaroids in background */}
+      <FallingPolaroids />
       
       <div className="film-roll-background fixed inset-0 pointer-events-none z-5">
         <FilmRoll />
