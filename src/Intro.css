@@ -1,0 +1,44 @@
+/* src/Intro.css */
+.intro-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.intro-content {
+  text-align: center;
+  width: 100%;
+  max-width: 1024px;
+  padding: 0 2rem;
+}
+
+.intro-blur-text {
+  color: white;
+  font-weight: 300;
+  font-size: 4rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.blur-text {
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .intro-blur-text {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .intro-blur-text {
+    font-size: 2rem;
+  }
+}
