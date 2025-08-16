@@ -1,30 +1,29 @@
+// src/MainContent.jsx - Updated version
 import React, { useState, useEffect } from 'react';
+import { FirebaseService } from './services/firebase';
+import SpecialPage from './components/SpecialPage';
 
-// Falling Polaroids Component
+// Falling Polaroids Component (unchanged)
 const FallingPolaroids = () => {
   const [polaroids, setPolaroids] = useState([]);
   const [activeColumns, setActiveColumns] = useState(new Set());
   
-  // Menggunakan array gambar yang sama dengan FilmRoll
   const images = ["/image1.png", "/image2.png", "/image3.png", "/image4.png", "/image5.png", "/image6.png", "/image7.png", "/image8.png", "/image9.png", "/image10.png", "/image11.png",
     "/image12.png", "/image13.png", "/image14.png", "/image15.png"];
 
   useEffect(() => {
     const generatePolaroid = () => {
-      const columns = 6; // Kurangi jumlah kolom
+      const columns = 6;
       let availableColumns = [];
       
-      // Cari kolom yang tersedia
       for (let i = 0; i < columns; i++) {
         if (!activeColumns.has(i)) {
           availableColumns.push(i);
         }
       }
 
-      // Jika terlalu banyak polaroid aktif, skip
       if (availableColumns.length === 0) return;
 
-      // Pilih kolom random dari yang tersedia
       const column = availableColumns[Math.floor(Math.random() * availableColumns.length)];
       setActiveColumns(prev => new Set([...prev, column]));
 
@@ -35,7 +34,6 @@ const FallingPolaroids = () => {
         scale: 0.5 + Math.random() * 0.2,
         duration: 8 + Math.random() * 4,
         column,
-        // Pilih gambar random dari array
         image: images[Math.floor(Math.random() * images.length)]
       };
       
@@ -43,7 +41,6 @@ const FallingPolaroids = () => {
 
       setTimeout(() => {
         setPolaroids(prev => prev.filter(p => p.id !== newPolaroid.id));
-        // Bebaskan kolom saat polaroid selesai
         setActiveColumns(prev => {
           const next = new Set(prev);
           next.delete(newPolaroid.column);
@@ -52,8 +49,7 @@ const FallingPolaroids = () => {
       }, newPolaroid.duration * 1000);
     };
 
-    // Generate polaroids dengan interval yang lebih teratur
-    const interval = setInterval(generatePolaroid, 3000); // Interval lebih lama
+    const interval = setInterval(generatePolaroid, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -110,17 +106,18 @@ const FallingPolaroids = () => {
   );
 };
 
-// Polaroid Component
-const Polaroid = () => {
+// Updated Polaroid Component with Firebase integration
+const Polaroid = ({ onSpecialCodeSuccess }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [specialCode, setSpecialCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Delay polaroid entrance animation
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 2000); // Muncul 2 detik setelah main content load
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -129,13 +126,30 @@ const Polaroid = () => {
     setIsFlipped(!isFlipped);
   };
 
-  const handleCodeSubmit = (e) => {
+  const handleCodeSubmit = async (e) => {
     e.preventDefault();
-    if (specialCode.toLowerCase() === 'secret' || specialCode === '12345') {
-      alert('Code correct! Welcome to the secret area! 🎉');
-      // Di sini bisa redirect atau unlock fitur tertentu
-    } else {
-      alert('Wrong code! Try again 🤔');
+    if (!specialCode.trim()) {
+      setError('Please enter a code');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const isValid = await FirebaseService.validateSpecialCode(specialCode);
+      
+      if (isValid) {
+        // Success! Show special page
+        onSpecialCodeSuccess(specialCode.toLowerCase());
+      } else {
+        setError('Invalid code! Try again 🤔');
+      }
+    } catch (err) {
+      setError('Error validating code. Please try again.');
+      console.error('Code validation error:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -224,7 +238,7 @@ const Polaroid = () => {
             alignItems: 'center',
             gap: '15px',
           }}
-          onClick={(e) => e.stopPropagation()} // Prevent flip when clicking form
+          onClick={(e) => e.stopPropagation()}
         >
           <h3 style={{ 
             margin: 0, 
@@ -240,37 +254,58 @@ const Polaroid = () => {
             <input
               type="text"
               value={specialCode}
-              onChange={(e) => setSpecialCode(e.target.value)}
+              onChange={(e) => {
+                setSpecialCode(e.target.value);
+                setError(''); // Clear error when typing
+              }}
               placeholder="Type here..."
+              disabled={isLoading}
               style={{
                 width: '100%',
                 padding: '8px',
-                border: '2px solid #ddd',
+                border: error ? '2px solid #ef4444' : '2px solid #ddd',
                 borderRadius: '4px',
                 textAlign: 'center',
                 fontSize: '14px',
                 marginBottom: '10px',
+                opacity: isLoading ? 0.6 : 1,
               }}
             />
             <button
               type="submit"
+              disabled={isLoading}
               style={{
                 width: '100%',
                 padding: '8px',
-                backgroundColor: '#333',
+                backgroundColor: isLoading ? '#999' : '#333',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: 'pointer',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
                 fontSize: '12px',
                 transition: 'background-color 0.3s',
               }}
-              onMouseOver={(e) => e.target.style.backgroundColor = '#555'}
-              onMouseOut={(e) => e.target.style.backgroundColor = '#333'}
+              onMouseOver={(e) => {
+                if (!isLoading) e.target.style.backgroundColor = '#555';
+              }}
+              onMouseOut={(e) => {
+                if (!isLoading) e.target.style.backgroundColor = '#333';
+              }}
             >
-              Submit ✨
+              {isLoading ? 'Checking...' : 'Submit ✨'}
             </button>
           </form>
+          
+          {error && (
+            <div style={{ 
+              fontSize: '10px', 
+              color: '#ef4444', 
+              textAlign: 'center',
+              fontWeight: 'bold'
+            }}>
+              {error}
+            </div>
+          )}
           
           <div style={{ 
             fontSize: '10px', 
@@ -278,7 +313,7 @@ const Polaroid = () => {
             textAlign: 'center',
             fontStyle: 'italic'
           }}>
-            Hint: Try "secret" or "12345"
+            Try: "adventure", "mystery", or "treasure"
           </div>
         </div>
       </div>
@@ -299,26 +334,12 @@ const Polaroid = () => {
           transform: ${isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'} scale(1.05) rotate(-5deg);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
-        
-        @keyframes polaroidBounce {
-          0% {
-            transform: translateY(100px) translateX(-50px) rotate(-15deg);
-            opacity: 0;
-          }
-          70% {
-            transform: translateY(-10px) translateX(5px) rotate(-5deg);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(0) translateX(0) rotate(-8deg);
-            opacity: 1;
-          }
-        }
       `}</style>
     </div>
   );
 };
 
+// FilmRoll Component (unchanged)
 const FilmRoll = () => {
   const images = ["/image1.png", "/image2.png", "/image3.png", "/image4.png", "/image5.png", "/image6.png", "/image7.png", "/image8.png", "/image9.png", "/image10.png", "/image11.png",
     "/image12.png", "/image13.png", "/image14.png", "/image15.png"];
@@ -395,7 +416,31 @@ const FilmRoll = () => {
   );
 };
 
+// Main Component with Special Page integration
 function MainContent() {
+  const [showSpecialPage, setShowSpecialPage] = useState(false);
+  const [currentSpecialCode, setCurrentSpecialCode] = useState('');
+
+  const handleSpecialCodeSuccess = (code) => {
+    setCurrentSpecialCode(code);
+    setShowSpecialPage(true);
+  };
+
+  const handleBackFromSpecialPage = () => {
+    setShowSpecialPage(false);
+    setCurrentSpecialCode('');
+  };
+
+  // Show special page if active
+  if (showSpecialPage) {
+    return (
+      <SpecialPage 
+        specialCode={currentSpecialCode}
+        onBack={handleBackFromSpecialPage}
+      />
+    );
+  }
+
   return (
     <div className="relative">
       {/* Dark background overlay */}
@@ -424,7 +469,7 @@ function MainContent() {
       </div>
 
       {/* Polaroid Component */}
-      <Polaroid />
+      <Polaroid onSpecialCodeSuccess={handleSpecialCodeSuccess} />
     </div>
   );
 }
