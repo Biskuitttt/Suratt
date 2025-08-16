@@ -1,7 +1,19 @@
-// src/MainContent.jsx - Updated version
+// src/MainContent.jsx - Name-only access version
 import React, { useState, useEffect } from 'react';
 import { FirebaseService } from './services/firebase';
 import SpecialPage from './components/SpecialPage';
+
+// Function to get redirect URL based on name
+const getRedirectUrl = (name) => {
+  const redirectMap = {
+    'kevin': 'https://id.wikipedia.org/wiki/Baskara_Putra',
+    // Add more mappings here for other names
+    // 'sarah': 'https://example.com/sarah',
+    // 'john': 'https://example.com/john',
+  };
+  
+  return redirectMap[name] || null;
+};
 
 // Falling Polaroids Component (unchanged)
 const FallingPolaroids = () => {
@@ -106,7 +118,7 @@ const FallingPolaroids = () => {
   );
 };
 
-// Updated Polaroid Component with Firebase integration
+// Updated Polaroid Component - Name-only access (no authentication)
 const Polaroid = ({ onSpecialCodeSuccess }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -129,7 +141,7 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
   const handleCodeSubmit = async (e) => {
     e.preventDefault();
     if (!specialCode.trim()) {
-      setError('Please enter a code');
+      setError('Please enter your name');
       return;
     }
 
@@ -137,17 +149,57 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
     setError('');
 
     try {
+      console.log('Checking name:', specialCode);
       const isValid = await FirebaseService.validateSpecialCode(specialCode);
       
+      console.log('Name validation result:', isValid);
+      
       if (isValid) {
-        // Success! Show special page
-        onSpecialCodeSuccess(specialCode.toLowerCase());
+        // Langsung redirect ke URL eksternal di tab baru
+        console.log(`Access granted for: ${specialCode}`);
+        
+        // Redirect berdasarkan nama yang diinput
+        const redirectUrl = getRedirectUrl(specialCode.toLowerCase());
+        
+        if (redirectUrl) {
+          console.log(`Redirecting to: ${redirectUrl}`);
+          window.open(redirectUrl, '_blank');
+          
+          // Reset form setelah redirect
+          setSpecialCode('');
+          setIsFlipped(false);
+        } else {
+          // Fallback ke special page jika tidak ada URL khusus
+          onSpecialCodeSuccess(specialCode.toLowerCase());
+        }
       } else {
-        setError('Invalid code! Try again 🤔');
+        // Check if collection is empty and suggest creating data
+        const allCodes = await FirebaseService.getAllSpecialCodes();
+        if (allCodes.length === 0) {
+          setError('No names found in database. Check console for setup instructions.');
+          console.log('=== SETUP REQUIRED ===');
+          console.log('Your Firestore collection "specialCodes" is empty.');
+          console.log('');
+          console.log('To add group member names, run:');
+          console.log('FirebaseService.createGroupMemberCodes(["Kevin", "Sarah", "John"])');
+          console.log('');
+          console.log('Then members can access by entering their name.');
+          
+          // Make FirebaseService available globally for easy access
+          window.FirebaseService = FirebaseService;
+        } else {
+          setError('Name not found! Check available names in console.');
+          console.log('Available names:');
+          allCodes.forEach(code => {
+            const displayName = code.name || 'Unknown';
+            const codeId = code.code || displayName.toLowerCase().replace(/\s+/g, '');
+            console.log(`- ${displayName} → enter: "${codeId}"`);
+          });
+        }
       }
     } catch (err) {
-      setError('Error validating code. Please try again.');
-      console.error('Code validation error:', err);
+      console.error('Name validation error:', err);
+      setError('Error checking name. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -219,11 +271,11 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
             color: '#333',
             marginTop: '10px'
           }}>
-            Click me! 📸
+            Click me to enter! ✨
           </div>
         </div>
 
-        {/* Back Side - Code Input */}
+        {/* Back Side - Name Input Only */}
         <div 
           style={{
             position: 'absolute',
@@ -247,7 +299,7 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
             textAlign: 'center',
             fontFamily: 'cursive'
           }}>
-            🔐 Enter Your<br/>Special Code
+            ✨ Enter Your Name<br/>to Access
           </h3>
           
           <form onSubmit={handleCodeSubmit} style={{ width: '100%' }}>
@@ -258,7 +310,7 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
                 setSpecialCode(e.target.value);
                 setError(''); // Clear error when typing
               }}
-              placeholder="Type here..."
+              placeholder="Your name..."
               disabled={isLoading}
               style={{
                 width: '100%',
@@ -277,7 +329,7 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
               style={{
                 width: '100%',
                 padding: '8px',
-                backgroundColor: isLoading ? '#999' : '#333',
+                backgroundColor: isLoading ? '#999' : '#10b981',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
@@ -286,13 +338,13 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
                 transition: 'background-color 0.3s',
               }}
               onMouseOver={(e) => {
-                if (!isLoading) e.target.style.backgroundColor = '#555';
+                if (!isLoading) e.target.style.backgroundColor = '#059669';
               }}
               onMouseOut={(e) => {
-                if (!isLoading) e.target.style.backgroundColor = '#333';
+                if (!isLoading) e.target.style.backgroundColor = '#10b981';
               }}
             >
-              {isLoading ? 'Checking...' : 'Submit ✨'}
+              {isLoading ? 'Checking...' : 'Enter ✨'}
             </button>
           </form>
           
@@ -313,7 +365,7 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
             textAlign: 'center',
             fontStyle: 'italic'
           }}>
-            Try: "adventure", "mystery", or "treasure"
+            Enter a name from the group (e.g., "Kevin")
           </div>
         </div>
       </div>
@@ -417,9 +469,21 @@ const FilmRoll = () => {
 };
 
 // Main Component with Special Page integration
-function MainContent() {
+function MainContent({ user }) {
   const [showSpecialPage, setShowSpecialPage] = useState(false);
   const [currentSpecialCode, setCurrentSpecialCode] = useState('');
+
+  // Check if user just authenticated and has a pending special code
+  useEffect(() => {
+    if (user) {
+      const pendingCode = localStorage.getItem('pendingSpecialCode');
+      if (pendingCode) {
+        localStorage.removeItem('pendingSpecialCode');
+        setCurrentSpecialCode(pendingCode);
+        setShowSpecialPage(true);
+      }
+    }
+  }, [user]);
 
   const handleSpecialCodeSuccess = (code) => {
     setCurrentSpecialCode(code);
@@ -469,7 +533,7 @@ function MainContent() {
       </div>
 
       {/* Polaroid Component */}
-      <Polaroid onSpecialCodeSuccess={handleSpecialCodeSuccess} />
+      <Polaroid onSpecialCodeSuccess={handleSpecialCodeSuccess} user={user} />
     </div>
   );
 }

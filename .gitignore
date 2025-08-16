@@ -23,10 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
-  apiKey: "AIzaSyBbwaK4SkACesSqM5zSYphzFkYrLxNYFKg",
-  authDomain: "surat-8317d.firebaseapp.com",
-  projectId: "surat-8317d",
-  storageBucket: "surat-8317d.firebasestorage.app",
-  messagingSenderId: "1038209960698",
-  appId: "1:1038209960698:web:25f5b0014ec56bad8fd743",
-  measurementId: "G-VYGFC6FXZE"
+apiKey: "AIzaSyBbwaK4SkACesSqM5zSYphzFkYrLxNYFKg",
+authDomain: "surat-8317d.firebaseapp.com",
+projectId: "surat-8317d",
+storageBucket: "surat-8317d.firebasestorage.app",
+messagingSenderId: "1038209960698",
+appId: "1:1038209960698:web:25f5b0014ec56bad8fd743",
+measurementId: "G-VYGFC6FXZE"

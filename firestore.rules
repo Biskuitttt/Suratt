@@ -2,29 +2,19 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Function to check if user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    // Function to check if user is accessing their own data
-    function isOwner(userId) {
-      return request.auth.uid == userId;
+    // Allow reading from specialCodes collection (needed for code validation)
+    match /specialCodes/{codeId} {
+      allow read: if true; // Allow anyone to read special codes for validation
+      allow write: if request.auth != null; // Only authenticated users can modify
     }
 
-    // Match any document in the 'users' collection
-    match /users/{userId} {
-      allow read: if isAuthenticated() && isOwner(userId);
-      allow write: if isAuthenticated() && isOwner(userId);
+    // Allow reading from specialCodes subcollections (like images)
+    match /specialCodes/{codeId}/{document=**} {
+      allow read: if true; // Allow anyone to read images/data within special codes
+      allow write: if request.auth != null; // Only authenticated users can modify
     }
 
-    // Match any subcollection under a user's document
-    match /users/{userId}/{document=**} {
-      allow read: if isAuthenticated() && isOwner(userId);
-      allow write: if isAuthenticated() && isOwner(userId);
-    }
-
-    // Default deny all
+    // Default deny all other collections (users are in Firebase Auth, not Firestore)
     match /{document=**} {
       allow read, write: if false;
     }

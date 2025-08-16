@@ -7,8 +7,8 @@ import MainContent from "./MainContent";
 import Auth from "./components/Auth";
 
 // Firebase
-import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase/config";
+import { onAuthStateChanged, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
 
 function App() {
   const [showIntro, setShowIntro] = useState(true);
@@ -22,6 +22,25 @@ function App() {
       setUser(currentUser);
     });
     return () => unsubscribe();
+  }, []);
+
+  // Check for email link authentication
+  useEffect(() => {
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+      let email = window.localStorage.getItem('emailForSignIn');
+      if (!email) {
+        email = window.prompt('Please provide your email for confirmation');
+      }
+      
+      signInWithEmailLink(auth, email, window.location.href)
+        .then(() => {
+          window.localStorage.removeItem('emailForSignIn');
+          console.log('Successfully signed in with email link');
+        })
+        .catch((error) => {
+          console.error('Error signing in with email link:', error);
+        });
+    }
   }, []);
 
   const handleIntroComplete = () => {
@@ -43,10 +62,8 @@ function App() {
       >
         {showIntro ? (
           <Intro onComplete={handleIntroComplete} />
-        ) : user ? (
-          <MainContent />
         ) : (
-          <Auth />
+          <MainContent user={user} />
         )}
       </div>
     </div>
