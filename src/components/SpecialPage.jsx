@@ -234,45 +234,68 @@ const SpecialPage = ({ specialCode, onBack }) => {
               </div>
             </div>
 
-            {/* Spotify embed */}
+            {/* Sticky Note - positioned under PS Vita */}
             <div className="col-span-4 relative">
               <div 
-                className="bg-gradient-to-br from-gray-700 to-gray-900 p-3 rounded-xl shadow-xl transform rotate-1 hover:rotate-0 transition-all duration-300"
-                style={{ aspectRatio: '3/2' }}
+                className="bg-yellow-200 p-4 shadow-2xl transform -rotate-1 hover:rotate-0 transition-all duration-300 relative"
+                style={{ aspectRatio: '4/3' }}
+              >
+                {/* Sticky note corner fold */}
+                <div className="absolute top-0 right-0 w-6 h-6 bg-yellow-300 transform rotate-45 origin-top-right translate-x-3 -translate-y-3 shadow-sm"></div>
+                
+                {/* Sticky note content */}
+                <div className="h-full flex flex-col justify-center text-center">
+                  <div className="mb-3">
+                    <h3 className="text-lg font-bold text-gray-800 mb-2" style={{ fontFamily: 'cursive' }}>
+                      Dear {pageData?.name || 'Friend'} 💕
+                    </h3>
+                    <p className="text-xs text-gray-700 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                      Thank you for being part of our beautiful journey. This day in July will forever be etched in our hearts.
+                    </p>
+                    <p className="text-xs text-gray-700 mt-2 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                      Every laugh, every smile, every moment tells our story.
+                    </p>
+                  </div>
+                  <div className="mt-auto">
+                    <p className="text-xs text-gray-600" style={{ fontFamily: 'cursive' }}>
+                      With love,<br/>
+                      <span className="font-bold">The Gang ✨</span>
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Small decorative elements */}
+                <div className="absolute top-2 left-2 text-pink-400 text-xs">💝</div>
+                <div className="absolute bottom-2 right-2 text-pink-400 text-xs">🌟</div>
+                
+                {/* Sticky note label */}
+                <div className="absolute -top-3 -left-3 bg-orange-400 text-white px-2 py-1 text-xs rounded transform -rotate-12 shadow-lg" style={{ fontFamily: 'cursive' }}>
+                  Special Note!
+                </div>
+              </div>
+            </div>
+
+            {/* Spotify Embed */}
+            <div className="col-span-8 relative">
+              <div 
+                className="bg-gradient-to-br from-green-800 to-green-900 p-4 rounded-xl shadow-xl transform rotate-1 hover:rotate-0 transition-all duration-300"
+                style={{ aspectRatio: '16/9' }}
               >
                 <iframe 
                   data-testid="embed-iframe" 
                   style={{ borderRadius: '12px' }} 
                   src="https://open.spotify.com/embed/track/5WOSNVChcadlsCRiqXE45K?utm_source=generator" 
                   width="100%" 
-                  height="152" 
+                  height="200" 
                   frameBorder="0" 
                   allowFullScreen="" 
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
                   loading="lazy"
                 />
-                <div className="absolute -top-3 -left-3 bg-green-500 text-white px-2 py-1 text-xs rounded transform -rotate-12 shadow-lg" style={{ fontFamily: 'cursive' }}>
-                  Our Song! 🎵
+                <div className="absolute -top-3 -left-3 bg-green-400 text-black px-3 py-1 text-sm rounded transform -rotate-12 shadow-lg" style={{ fontFamily: 'cursive' }}>
+                  Our Playlist 🎵
                 </div>
               </div>
-            </div>
-
-            {/* More polaroids */}
-            <div className="col-span-5 grid grid-cols-2 gap-3">
-              {[7, 8, 9, 4].map((index, i) => (
-                <div key={index} className={`transform ${i % 2 === 0 ? '-rotate-2' : 'rotate-2'} hover:rotate-0 transition-all duration-300`}>
-                  <div className="bg-white p-2 shadow-lg rounded">
-                    <img 
-                      src={sampleImages[index]} 
-                      alt={`Memory ${index}`} 
-                      className="w-full h-20 object-cover rounded"
-                    />
-                    <div className="h-4 flex items-center justify-center text-xs" style={{ fontFamily: 'cursive' }}>
-                      July 2024
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
 
             {/* Text elements and stickers - updated for dark theme */}
