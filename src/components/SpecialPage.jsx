@@ -330,9 +330,45 @@ const SpecialPage = ({ specialCode, onBack }) => {
       {/* Floating decorative elements */}
       <div className="fixed bottom-10 right-10 pointer-events-none">
         <div className="relative">
-          <div className="text-6xl animate-bounce" style={{ animationDelay: '0s' }}>🌟</div>
-          <div className="absolute -top-4 -right-4 text-4xl animate-bounce" style={{ animationDelay: '1s' }}>✨</div>
-          <div className="absolute -bottom-2 -left-2 text-3xl animate-bounce" style={{ animationDelay: '2s' }}>💫</div>
+          <div className="text-4xl lg:text-6xl animate-bounce" style={{ animationDelay: '0s' }}>🌟</div>
+          <div className="absolute -top-4 -right-4 text-2xl lg:text-4xl animate-bounce" style={{ animationDelay: '1s' }}>✨</div>
+          <div className="absolute -bottom-2 -left-2 text-xl lg:text-3xl animate-bounce" style={{ animationDelay: '2s' }}>💫</div>
+        </div>
+      </div>
+
+      {/* Vinyl Record Player - Bottom Right */}
+      <div className="fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-20">
+        <div className="relative w-24 h-24 lg:w-32 lg:h-32">
+          {/* Vinyl Record */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800 rounded-full shadow-2xl animate-spin" style={{ animationDuration: '3s', animationIterationCount: 'infinite' }}>
+            {/* Record grooves */}
+            <div className="absolute inset-2 border border-gray-600 rounded-full opacity-30"></div>
+            <div className="absolute inset-4 border border-gray-600 rounded-full opacity-20"></div>
+            <div className="absolute inset-6 border border-gray-600 rounded-full opacity-15"></div>
+            
+            {/* Center label */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-red-600 rounded-full border-2 border-red-800 flex items-center justify-center">
+                <div className="w-2 h-2 bg-black rounded-full"></div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Tonearm */}
+          <div className="absolute -top-2 right-2 w-12 lg:w-16 h-1 bg-gray-400 rounded-full transform origin-right rotate-45 shadow-lg">
+            <div className="absolute right-0 w-2 h-2 bg-gray-600 rounded-full transform translate-x-1 -translate-y-0.5"></div>
+          </div>
+          
+          {/* Now Playing Label */}
+          <div className="absolute -top-8 left-0 bg-gray-800/90 backdrop-blur-sm text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap" style={{ fontFamily: 'cursive' }}>
+            🎵 Now Playing
+          </div>
+          
+          {/* Song Info - you can replace this with dynamic content later */}
+          <div className="absolute -bottom-12 lg:-bottom-16 left-0 right-0 bg-gray-800/90 backdrop-blur-sm text-white text-xs p-2 rounded shadow-lg text-center" style={{ fontFamily: 'cursive' }}>
+            <div className="font-semibold">Your Song</div>
+            <div className="text-gray-300">Artist Name</div>
+          </div>
         </div>
       </div>
     </div>
