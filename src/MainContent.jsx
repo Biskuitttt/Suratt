@@ -255,7 +255,7 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
             }}
           >
             <img 
-              src="/image2.png"
+              src="/duren.jpg"
               alt="Special Photo"
               style={{
                 width: '100%',
