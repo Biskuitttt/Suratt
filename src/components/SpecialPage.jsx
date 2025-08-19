@@ -646,14 +646,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
         </div>
       </main>
 
-      {/* Floating decorative elements */}
-      <div className="fixed bottom-10 right-10 pointer-events-none z-30">
-        <div className="relative">
-          <div className="text-4xl lg:text-6xl animate-bounce" style={{ animationDelay: '0s' }}>🌟</div>
-          <div className="absolute -top-4 -right-4 text-2xl lg:text-4xl animate-bounce" style={{ animationDelay: '1s' }}>✨</div>
-          <div className="absolute -bottom-2 -left-2 text-xl lg:text-3xl animate-bounce" style={{ animationDelay: '2s' }}>💫</div>
-        </div>
-      </div>
+
 
       {/* Vinyl Record Player - Bottom Right - styled for bulletin board */}
       <div className="fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-20">
