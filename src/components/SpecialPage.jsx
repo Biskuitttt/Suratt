@@ -5,6 +5,7 @@ import { FirebaseService } from '../services/firebase';
 const SpecialPage = ({ specialCode, onBack }) => {
   const [pageData, setPageData] = useState(null);
   const [images, setImages] = useState([]);
+  const [participantPhoto, setParticipantPhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -16,6 +17,11 @@ const SpecialPage = ({ specialCode, onBack }) => {
 
   useEffect(() => {
     loadSpecialPageData();
+    
+    // Make FirebaseService available globally for testing
+    if (typeof window !== 'undefined') {
+      window.FirebaseService = FirebaseService;
+    }
   }, [specialCode]);
 
   const loadSpecialPageData = async () => {
@@ -23,11 +29,55 @@ const SpecialPage = ({ specialCode, onBack }) => {
       setLoading(true);
       setError(null);
 
+      // Fetch participant photo from Firebase
+      if (specialCode) {
+        try {
+          // Debug the document structure first
+          console.log('=== DEBUGGING PARTICIPANT DOCUMENT ===');
+          const debugInfo = await FirebaseService.debugParticipantDocument(specialCode);
+          console.log('Debug info:', debugInfo);
+          
+          // Fetch the photo
+          console.log('Fetching photo for:', specialCode);
+          const photoURL = await FirebaseService.getParticipantPhoto(specialCode);
+          setParticipantPhoto(photoURL);
+          console.log('✅ Participant photo loaded:', photoURL);
+          
+          // Additional debug: check if it's a local path or Firebase URL
+          if (photoURL.startsWith('/Peserta/')) {
+            console.log('🚨 Using LOCAL fallback photo (Firebase document not found)');
+            console.log('💡 Run this to create the document: FirebaseService.setupCompleteDatabase()');
+          } else {
+            console.log('🔥 Using Firebase photo successfully!');
+          }
+        } catch (photoError) {
+          console.error('Error loading participant photo:', photoError);
+          // Fallback to default image
+          setParticipantPhoto(sampleImages[1]);
+        }
+      }
+
+      // Get the participant's display name from Firebase
+      let participantDisplayName = specialCode || 'Guest';
+      
+      try {
+        const specialCodeData = await FirebaseService.getSpecialCodeData(specialCode);
+        if (specialCodeData && specialCodeData.name) {
+          participantDisplayName = specialCodeData.name;
+          console.log('📝 Using display name from Firebase:', participantDisplayName);
+        } else {
+          console.log('📝 No name field found in Firebase, using code:', participantDisplayName);
+        }
+      } catch (nameError) {
+        console.error('Error getting participant name from Firebase:', nameError);
+        // Keep the fallback name (specialCode)
+      }
+
       // Simulate loading for demo
       setTimeout(() => {
         setPageData({
-          name: specialCode || 'Guest',
-          title: 'One Day in July',
+          name: participantDisplayName,
+          title: 'One Day in UMN',
           description: 'Our special memories together'
         });
         setLoading(false);
@@ -41,9 +91,9 @@ const SpecialPage = ({ specialCode, onBack }) => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-amber-100 flex items-center justify-center z-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-800 mb-4"></div>
+      <div className="fixed inset-0 bg-amber-100 flex items-center justify-center z-50" style={{ margin: 0, padding: 0 }}>
+        <div className="text-center flex flex-col items-center justify-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-800 mb-4 mx-auto"></div>
           <p className="text-amber-800 text-xl" style={{ fontFamily: 'cursive' }}>Loading memories...</p>
         </div>
       </div>
@@ -67,7 +117,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col">
       {/* Cork Board Background */}
       <div 
         className="absolute inset-0"
@@ -115,7 +165,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
       </div>
 
       {/* Header */}
-      <header className="relative z-20 p-4">
+      <header className="absolute top-0 left-0 right-0 z-20 p-3">
         <div className="flex items-center justify-between">
           <button
             onClick={onBack}
@@ -131,8 +181,52 @@ const SpecialPage = ({ specialCode, onBack }) => {
       </header>
 
       {/* Main Content - Bulletin Board Style */}
-      <main className="relative z-10 p-6 pt-4 h-full overflow-auto">
-        <div className="relative max-w-6xl mx-auto">
+      <main 
+        className="absolute inset-0 z-10 overflow-y-auto overflow-x-hidden pt-16"
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(217, 119, 6, 0.6) transparent'
+        }}
+      >
+        <style jsx>{`
+          main::-webkit-scrollbar {
+            width: 6px;
+          }
+          
+          main::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          
+          main::-webkit-scrollbar-thumb {
+            background: rgba(217, 119, 6, 0.4);
+            border-radius: 3px;
+            transition: opacity 0.2s ease;
+          }
+          
+          main::-webkit-scrollbar-thumb:hover {
+            background: rgba(217, 119, 6, 0.7);
+          }
+          
+          main::-webkit-scrollbar-thumb:active {
+            background: rgba(180, 83, 9, 0.8);
+          }
+          
+          /* Hide scrollbar but keep functionality */
+          main {
+            scrollbar-width: none;
+          }
+          
+          /* Show only on hover for modern feel */
+          main:not(:hover)::-webkit-scrollbar-thumb {
+            opacity: 0;
+          }
+          
+          main:hover::-webkit-scrollbar-thumb {
+            opacity: 1;
+          }
+        `}</style>
+        <div className="p-6 pt-4">
+          <div className="relative max-w-6xl mx-auto pb-24">{/* Added bottom padding for record player space */}
           
           {/* Title Board - Pinned at the top */}
           <div className="flex justify-center mb-8">
@@ -161,7 +255,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
                   className="text-2xl lg:text-3xl text-blue-600 text-center transform -rotate-1"
                   style={{ fontFamily: 'cursive' }}
                 >
-                  In July
+                  In UMN
                 </p>
             </div>
 
@@ -205,30 +299,58 @@ const SpecialPage = ({ specialCode, onBack }) => {
                 <div className="absolute -bottom-2 right-8 w-16 h-6 bg-blue-400 transform rotate-12 opacity-80 rounded shadow"></div>
               </div>
 
-              {/* Gaming section */}
+              {/* Gaming section - Photo Frame Style */}
               <div className="relative mb-6">
-                <div className="bg-blue-50 p-4 transform -rotate-1 shadow-md border border-blue-200 rounded">
-                  <h3 className="text-lg font-bold text-blue-600 mb-3" style={{ fontFamily: 'cursive' }}>
-                    Gaming Time! 🎮
-                  </h3>
-                  <div className="bg-gray-900 rounded-lg p-3 relative">
-                    <img 
-                      src={sampleImages[1]} 
-                      alt="Gaming moment" 
-                      className="w-full h-32 object-cover rounded"
-                    />
-                    <div className="flex justify-between items-center mt-2 text-white text-sm">
-                      <div className="flex space-x-2">
-                        <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-                        <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                        <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                <div className="bg-gradient-to-b from-amber-50 to-amber-100 p-6 transform -rotate-1 shadow-xl border-4 border-amber-200 rounded-lg">
+                  
+                  {/* Ornate Photo Frame */}
+                  <div className="relative">
+                    {/* Outer decorative frame */}
+                    <div className="bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 p-1 rounded-lg shadow-lg">
+                      {/* Inner frame */}
+                      <div className="bg-gradient-to-br from-amber-100 to-amber-200 p-3 rounded-md">
+                        {/* Photo container with ornate border */}
+                        <div className="relative bg-white p-2 rounded shadow-inner border-2 border-amber-300">
+                          <img 
+                            src={participantPhoto || sampleImages[1]} 
+                            alt="Gaming moment" 
+                            className="w-full h-48 object-cover rounded border border-gray-200"
+                            onLoad={() => console.log('🖼️ Mobile gaming image loaded:', participantPhoto || sampleImages[1])}
+                            onError={(e) => {
+                              console.error('❌ Mobile gaming image failed to load:', participantPhoto || sampleImages[1]);
+                              console.log('Falling back to sample image');
+                              e.target.src = sampleImages[1];
+                            }}
+                          />
+                          
+                          {/* Corner decorations */}
+                          <div className="absolute -top-1 -left-1 w-3 h-3 bg-amber-400 rotate-45 border border-amber-500"></div>
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rotate-45 border border-amber-500"></div>
+                          <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-amber-400 rotate-45 border border-amber-500"></div>
+                          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-amber-400 rotate-45 border border-amber-500"></div>
+                        </div>
+                        
+                        {/* Decorative elements */}
+                        <div className="flex justify-center mt-3 space-x-2">
+                          <div className="w-2 h-2 bg-red-500 rounded-full shadow-sm"></div>
+                          <div className="w-2 h-2 bg-green-500 rounded-full shadow-sm"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full shadow-sm"></div>
+                        </div>
                       </div>
-                      <div className="font-mono">PS VITA</div>
+                    </div>
+                    
+                    {/* Frame nameplate */}
+                    <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-amber-600 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg border-2 border-amber-700">
+                        {pageData?.name || 'Player'}
+                      </div>
                     </div>
                   </div>
                 </div>
                 {/* Heart sticker */}
                 <div className="absolute top-2 right-2 text-2xl">💖</div>
+                {/* Frame hanging wire effect */}
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gray-400 rounded-full shadow-sm"></div>
               </div>
             </div>
 
@@ -258,7 +380,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
                       <img 
                         src={sampleImages[index]} 
                         alt={`Memory ${index}`} 
-                        className="w-full h-20 object-cover"
+                        className="w-full h-40 object-cover"
                       />
                       <div className="mt-1 text-center text-xs text-gray-700" style={{ fontFamily: 'cursive' }}>
                         Moment {index - 1}
@@ -280,7 +402,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
                     <img 
                       src={sampleImages[5]} 
                       alt="Through camera lens" 
-                      className="w-full h-32 object-cover rounded"
+                      className="w-full h-48 object-cover rounded"
                     />
                     <div className="absolute top-2 left-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                     <div className="text-white text-sm mt-2 text-center font-mono">Canon EOS</div>
@@ -342,7 +464,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
 
               {/* Memory quote */}
               <div className="relative">
-                <div className="bg-blue-100 p-4 rounded-lg shadow-md border-l-4 border-blue-500 border border-blue-200 transform rotate-1">
+                <div className="bg-blue-100 p-4 rounded-lg shadow-md border-l-4 border-blue-500 transform rotate-1">
                   <p className="text-sm text-gray-800 italic leading-relaxed" style={{ fontFamily: 'cursive' }}>
                     "One day we spent together that became a lifetime of memories... 💕"
                   </p>
@@ -452,34 +574,62 @@ const SpecialPage = ({ specialCode, onBack }) => {
               </div>
             </div>
 
-            {/* Gaming device mockup - pinned */}
+            {/* Gaming device mockup - Photo Frame Style */}
             <div className="col-span-12 lg:col-span-4 row-span-2 relative">
               <div className="relative">
                 <div 
-                  className="bg-white p-4 rounded-lg shadow-xl transform rotate-2 hover:rotate-0 transition-all duration-300 border border-gray-200"
-                  style={{ aspectRatio: '16/10' }}
+                  className="bg-gradient-to-b from-amber-50 to-amber-100 p-6 rounded-lg shadow-2xl transform rotate-2 hover:rotate-0 transition-all duration-300 border-4 border-amber-200"
+                  style={{ aspectRatio: '1/1' }}
                 >
-                  <div className="bg-gray-900 rounded-lg p-3 relative">
-                    <img 
-                      src={sampleImages[1]} 
-                      alt="Gaming moment" 
-                      className="w-full h-32 object-cover rounded"
-                    />
-                    <div className="flex justify-between items-center mt-3 text-white text-xs">
-                      <div className="flex space-x-2">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  
+                  {/* Ornate Photo Frame */}
+                  <div className="relative">
+                    {/* Outer decorative frame */}
+                    <div className="bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 p-1 rounded-lg shadow-lg">
+                      {/* Inner frame */}
+                      <div className="bg-gradient-to-br from-amber-100 to-amber-200 p-3 rounded-md">
+                        {/* Photo container with ornate border */}
+                        <div className="relative bg-white p-2 rounded shadow-inner border-2 border-amber-300">
+                          <img 
+                            src={participantPhoto || sampleImages[1]} 
+                            alt="Gaming moment" 
+                            className="w-full h-100 object-cover rounded border border-gray-200"
+                            onLoad={() => console.log('🖼️ Desktop gaming image loaded:', participantPhoto || sampleImages[1])}
+                            onError={(e) => {
+                              console.error('❌ Desktop gaming image failed to load:', participantPhoto || sampleImages[1]);
+                              console.log('Falling back to sample image');
+                              e.target.src = sampleImages[1];
+                            }}
+                          />
+                          
+                          {/* Corner decorations */}
+                          <div className="absolute -top-1 -left-1 w-3 h-3 bg-amber-400 rotate-45 border border-amber-500"></div>
+                          <div className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rotate-45 border border-amber-500"></div>
+                          <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-amber-400 rotate-45 border border-amber-500"></div>
+                          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-amber-400 rotate-45 border border-amber-500"></div>
+                        </div>
+                        
+                        {/* Decorative elements */}
+                        <div className="flex justify-center mt-2 space-x-2">
+                          <div className="w-2 h-2 bg-red-500 rounded-full shadow-sm"></div>
+                          <div className="w-2 h-2 bg-green-500 rounded-full shadow-sm"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full shadow-sm"></div>
+                        </div>
                       </div>
-                      <div className="font-mono">PS VITA</div>
                     </div>
-                  </div>
-                  <div className="mt-2 text-center text-gray-700 text-sm" style={{ fontFamily: 'cursive' }}>
-                    Gaming Session 🎮
+                    
+                    {/* Frame nameplate */}
+                    <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-amber-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg border-2 border-amber-700">
+                        {pageData?.name || 'Player'}
+                      </div>
+                    </div>
                   </div>
                 </div>
                 {/* Push pin */}
                 <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-purple-500 rounded-full shadow-lg border-2 border-purple-600"></div>
+                {/* Frame hanging wire effect */}
+                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gray-400 rounded-full shadow-sm"></div>
               </div>
             </div>
 
@@ -491,7 +641,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
                     <img 
                       src={sampleImages[index]} 
                       alt={`Memory ${index}`} 
-                      className="w-full h-24 object-cover"
+                      className="w-full h-40 object-cover"
                     />
                     <div className="mt-2 text-center text-xs text-gray-700" style={{ fontFamily: 'cursive' }}>
                       Moment {index - 1}
@@ -508,13 +658,13 @@ const SpecialPage = ({ specialCode, onBack }) => {
               <div className="relative">
                 <div 
                   className="bg-white p-4 rounded-lg shadow-xl transform -rotate-3 hover:rotate-0 transition-all duration-300 border border-gray-200"
-                  style={{ aspectRatio: '4/3' }}
+                  style={{ aspectRatio: '1/1' }}
                 >
                   <div className="bg-black rounded p-3 relative">
                     <img 
                       src={sampleImages[5]} 
                       alt="Through camera lens" 
-                      className="w-full h-24 object-cover rounded"
+                      className="w-full h-40 object-cover rounded"
                     />
                     <div className="absolute top-2 left-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
                     <div className="text-white text-xs mt-2 text-center font-mono">Canon EOS</div>
@@ -580,9 +730,9 @@ const SpecialPage = ({ specialCode, onBack }) => {
                   <iframe 
                     data-testid="embed-iframe" 
                     style={{ borderRadius: '8px' }} 
-                    src="https://open.spotify.com/embed/track/5WOSNVChcadlsCRiqXE45K?utm_source=generator" 
+                    src="https://open.spotify.com/embed/playlist/1fhe63s4CJ4U2SpP5E7Xu6?utm_source=generator"
                     width="100%" 
-                    height="200" 
+                    height="500" 
                     frameBorder="0" 
                     allowFullScreen="" 
                     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
@@ -603,7 +753,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
             <div className="col-span-12 relative h-40">
               {/* Memory card 1 */}
               <div className="absolute top-4 left-20 transform -rotate-3">
-                <div className="bg-blue-100 p-4 rounded shadow-xl border-l-4 border-blue-500 border border-blue-200">
+                <div className="bg-blue-100 p-4 rounded shadow-xl border-l-4 border-blue-500">
                   <p className="text-sm text-gray-800" style={{ fontFamily: 'cursive' }}>
                     "One day we spent together that became a lifetime of memories... 💕"
                   </p>
@@ -644,6 +794,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
 
           </div>
         </div>
+        </div>
       </main>
 
 
@@ -655,33 +806,54 @@ const SpecialPage = ({ specialCode, onBack }) => {
           <div className="bg-amber-800 p-4 rounded shadow-xl border border-amber-900">
             <div className="relative w-20 h-20 lg:w-28 lg:h-28">
               {/* Vinyl Record */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800 rounded-full shadow-2xl animate-spin" style={{ animationDuration: '3s', animationIterationCount: 'infinite' }}>
-                {/* Record grooves */}
-                <div className="absolute inset-2 border border-gray-600 rounded-full opacity-30"></div>
-                <div className="absolute inset-4 border border-gray-600 rounded-full opacity-20"></div>
+              <div className="absolute inset-0 rounded-full shadow-2xl animate-spin overflow-hidden" style={{ animationDuration: '3s', animationIterationCount: 'infinite' }}>
+                <img 
+                  src="/vinyl.png" 
+                  alt="Vinyl Record" 
+                  className="w-full h-full object-cover rounded-full"
+                />
                 
-                {/* Center label */}
+                {/* Center label overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-red-600 rounded-full border-2 border-red-800 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-black rounded-full"></div>
+                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-red-600 rounded-full border-2 border-red-800 flex items-center justify-center shadow-lg">
+                    <div className="w-2 h-2 bg-black rounded-full shadow-inner"></div>
                   </div>
                 </div>
+                
+                {/* Subtle vinyl grooves overlay */}
+                <div className="absolute inset-2 border border-black/10 rounded-full"></div>
+                <div className="absolute inset-3 border border-black/5 rounded-full"></div>
+                <div className="absolute inset-4 border border-black/5 rounded-full"></div>
+                
+                {/* Vinyl shine effect */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-30"></div>
               </div>
               
               {/* Tonearm */}
-              <div className="absolute -top-1 right-1 w-10 lg:w-14 h-1 bg-gray-400 rounded-full transform origin-right rotate-45 shadow-lg">
-                <div className="absolute right-0 w-2 h-2 bg-gray-600 rounded-full transform translate-x-1 -translate-y-0.5"></div>
+              <div className="absolute top-2 right-3 w-10 lg:w-14 h-1 bg-gray-300 rounded-full transform origin-right -rotate-65 shadow-lg border-t border-gray-500">
+                <div className="absolute right-0 w-2 h-2 bg-gray-600 rounded-full transform translate-x-1 -translate-y-0.5 border border-gray-700"></div>
+                {/* Tonearm counterweight */}
+                <div className="absolute left-0 w-1.5 h-1.5 bg-gray-500 rounded-full transform -translate-x-1 -translate-y-0.25"></div>
               </div>
-            </div>
-            
-            {/* Record player label */}
-            <div className="mt-2 text-center text-white text-xs" style={{ fontFamily: 'cursive' }}>
-              Vintage Vibes 🎵
             </div>
           </div>
           
-          {/* Push pin for record player */}
+          {/* Push pin for record player - positioned correctly at top center */}
           <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full shadow-lg border-2 border-orange-600"></div>
+          
+          {/* Musical notes floating above record player */}
+          <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
+            <div className="text-amber-700 text-lg lg:text-xl animate-bounce" style={{ animationDelay: '0s', animationDuration: '2s' }}>♪</div>
+          </div>
+          <div className="absolute -top-12 left-2">
+            <div className="text-amber-600 text-base lg:text-lg animate-bounce" style={{ animationDelay: '0.5s', animationDuration: '2.5s' }}>♫</div>
+          </div>
+          <div className="absolute -top-14 -left-1">
+            <div className="text-amber-800 text-sm lg:text-base animate-bounce" style={{ animationDelay: '1s', animationDuration: '3s' }}>♬</div>
+          </div>
+          <div className="absolute -top-10 left-4">
+            <div className="text-amber-500 text-xs lg:text-sm animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '2.2s' }}>♩</div>
+          </div>
         </div>
       </div>
 

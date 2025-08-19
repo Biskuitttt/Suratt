@@ -6,8 +6,7 @@ import SpecialPage from './components/SpecialPage';
 // Function to get redirect URL based on name
 const getRedirectUrl = (name) => {
   const redirectMap = {
-    'kevin': 'https://id.wikipedia.org/wiki/Baskara_Putra',
-    // Add more mappings here for other names
+    // Add mappings here for names that need redirects
     // 'sarah': 'https://example.com/sarah',
     // 'john': 'https://example.com/john',
   };
@@ -472,6 +471,15 @@ const FilmRoll = () => {
 function MainContent({ user }) {
   const [showSpecialPage, setShowSpecialPage] = useState(false);
   const [currentSpecialCode, setCurrentSpecialCode] = useState('');
+
+  // Make FirebaseService available globally for testing
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.FirebaseService = FirebaseService;
+      console.log('FirebaseService is now available globally for testing!');
+      console.log('Try: FirebaseService.testParticipantPhoto("Kevin")');
+    }
+  }, []);
 
   // Check if user just authenticated and has a pending special code
   useEffect(() => {

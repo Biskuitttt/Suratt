@@ -9,6 +9,7 @@ import Auth from "./components/Auth";
 // Firebase
 import { auth } from "./firebase/config";
 import { onAuthStateChanged, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
+import { FirebaseService } from "./services/firebase";
 
 function App() {
   const [showIntro, setShowIntro] = useState(true);
@@ -21,6 +22,13 @@ function App() {
       console.log("Auth state changed:", currentUser);
       setUser(currentUser);
     });
+    
+    // Make FirebaseService available globally for testing
+    if (typeof window !== 'undefined') {
+      window.FirebaseService = FirebaseService;
+      console.log('FirebaseService available globally for testing');
+    }
+    
     return () => unsubscribe();
   }, []);
 
