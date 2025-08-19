@@ -41,10 +41,10 @@ const SpecialPage = ({ specialCode, onBack }) => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-amber-100 flex items-center justify-center z-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mb-4"></div>
-          <p className="text-gray-800 text-xl">Loading memories...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-800 mb-4"></div>
+          <p className="text-amber-800 text-xl" style={{ fontFamily: 'cursive' }}>Loading memories...</p>
         </div>
       </div>
     );
@@ -52,12 +52,12 @@ const SpecialPage = ({ specialCode, onBack }) => {
 
   if (error) {
     return (
-      <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-amber-100 flex items-center justify-center z-50">
         <div className="text-center">
-          <p className="text-red-500 text-xl mb-4">{error}</p>
+          <p className="text-red-600 text-xl mb-4">{error}</p>
           <button
             onClick={onBack}
-            className="px-6 py-2 bg-gray-900 text-white rounded hover:bg-gray-700 transition-colors"
+            className="px-6 py-2 bg-amber-800 text-white rounded hover:bg-amber-700 transition-colors"
           >
             Go Back
           </button>
@@ -67,27 +67,59 @@ const SpecialPage = ({ specialCode, onBack }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black z-50 overflow-hidden">
-      {/* Dark Paper Background */}
-      <div className="absolute inset-0 opacity-20">
+    <div className="fixed inset-0 z-50 overflow-hidden">
+      {/* Cork Board Background */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          backgroundColor: '#D4A574',
+          backgroundImage: `
+            radial-gradient(circle at 20% 80%, #C9975B 2px, transparent 2px),
+            radial-gradient(circle at 80% 20%, #C9975B 2px, transparent 2px),
+            radial-gradient(circle at 40% 40%, #B8926F 1px, transparent 1px),
+            radial-gradient(circle at 90% 70%, #B8926F 1px, transparent 1px),
+            radial-gradient(circle at 10% 90%, #C9975B 1.5px, transparent 1.5px),
+            radial-gradient(circle at 60% 10%, #B8926F 1px, transparent 1px),
+            radial-gradient(circle at 30% 70%, #C9975B 2px, transparent 2px),
+            radial-gradient(circle at 70% 90%, #B8926F 1px, transparent 1px)
+          `,
+          backgroundSize: '150px 150px, 200px 200px, 100px 100px, 180px 180px, 120px 120px, 160px 160px, 140px 140px, 110px 110px'
+        }}
+      >
+        {/* Cork texture overlay */}
         <div 
-          className="w-full h-full"
+          className="absolute inset-0 opacity-30"
           style={{
             backgroundImage: `
-              linear-gradient(transparent 0, transparent 39px, rgba(255,255,255,0.1) 40px),
-              linear-gradient(90deg, transparent 0, transparent 79px, rgba(255,255,255,0.1) 80px)
+              linear-gradient(45deg, transparent 49%, rgba(139, 117, 89, 0.1) 50%, transparent 51%),
+              linear-gradient(-45deg, transparent 49%, rgba(139, 117, 89, 0.1) 50%, transparent 51%)
             `,
-            backgroundSize: '80px 40px'
+            backgroundSize: '8px 8px'
           }}
         ></div>
       </div>
 
-      {/* Header dengan style scrapbook */}
-      <header className="relative z-10 p-4">
+      {/* Push Pins scattered around */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Push pins */}
+        <div className="absolute top-20 left-16 w-4 h-4 bg-red-500 rounded-full shadow-lg border-2 border-red-600"></div>
+        <div className="absolute top-32 right-24 w-4 h-4 bg-blue-500 rounded-full shadow-lg border-2 border-blue-600"></div>
+        <div className="absolute bottom-40 left-20 w-4 h-4 bg-yellow-500 rounded-full shadow-lg border-2 border-yellow-600"></div>
+        <div className="absolute bottom-24 right-16 w-4 h-4 bg-green-500 rounded-full shadow-lg border-2 border-green-600"></div>
+        <div className="absolute top-1/2 left-8 w-4 h-4 bg-purple-500 rounded-full shadow-lg border-2 border-purple-600"></div>
+        <div className="absolute top-1/3 right-8 w-4 h-4 bg-pink-500 rounded-full shadow-lg border-2 border-pink-600"></div>
+        
+        {/* Additional smaller pins */}
+        <div className="absolute top-60 left-1/3 w-3 h-3 bg-orange-500 rounded-full shadow-md border border-orange-600"></div>
+        <div className="absolute bottom-60 right-1/3 w-3 h-3 bg-teal-500 rounded-full shadow-md border border-teal-600"></div>
+      </div>
+
+      {/* Header */}
+      <header className="relative z-20 p-4">
         <div className="flex items-center justify-between">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800/80 backdrop-blur-sm rounded-full shadow-lg text-white hover:bg-gray-700 transition-all border-2 border-gray-600"
+            className="flex items-center gap-2 px-4 py-2 bg-amber-800/90 backdrop-blur-sm rounded-full shadow-lg text-white hover:bg-amber-700 transition-all border-2 border-amber-900"
             style={{ fontFamily: 'cursive' }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -95,282 +127,318 @@ const SpecialPage = ({ specialCode, onBack }) => {
             </svg>
             Back
           </button>
-          
-          {/* Main Title with decorative elements */}
-          <div className="absolute left-1/2 top-4 transform -translate-x-1/2 text-center">
-            <div className="relative">
-              <h1 
-                className="text-4xl font-bold text-yellow-400 mb-2 transform -rotate-2"
-                style={{ 
-                  fontFamily: 'cursive',
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
-                }}
-              >
-                ONE DAY
-              </h1>
-              <p 
-                className="text-2xl text-pink-400 transform rotate-1"
-                style={{ fontFamily: 'cursive' }}
-              >
-                In July
-              </p>
-              
-              {/* Decorative doodles */}
-              <div className="absolute -top-2 -right-8 text-yellow-300 text-2xl transform rotate-12">⭐</div>
-              <div className="absolute -bottom-2 -left-6 text-pink-300 text-xl transform -rotate-12">✨</div>
-            </div>
-          </div>
         </div>
       </header>
 
-      {/* Main Collage Content */}
-      <main className="relative z-10 p-6 pt-24 h-full overflow-auto">
-        {/* Collage Container */}
+      {/* Main Content - Bulletin Board Style */}
+      <main className="relative z-10 p-6 pt-4 h-full overflow-auto">
         <div className="relative max-w-6xl mx-auto">
           
-          {/* Background decorative elements */}
-          <div className="absolute inset-0 pointer-events-none">
-            {/* Washi tape strips - darker colors for dark theme */}
-            <div className="absolute top-20 left-10 w-32 h-6 bg-gradient-to-r from-pink-600 to-pink-700 transform -rotate-12 opacity-70 rounded shadow-lg"></div>
-            <div className="absolute top-40 right-20 w-40 h-6 bg-gradient-to-r from-blue-600 to-blue-700 transform rotate-6 opacity-70 rounded shadow-lg"></div>
-            <div className="absolute bottom-40 left-16 w-36 h-6 bg-gradient-to-r from-green-600 to-green-700 transform -rotate-6 opacity-70 rounded shadow-lg"></div>
-            
-            {/* Paper clips and pins */}
-            <div className="absolute top-32 right-40">
-              <div className="w-4 h-6 border-2 border-gray-300 rounded-sm transform rotate-45 shadow-md"></div>
+          {/* Title Board - Pinned at the top */}
+          <div className="flex justify-center mb-8">
+            <div className="relative">
+              {/* Paper background for title */}
+              <div 
+                className="bg-yellow-100 p-6 transform -rotate-1 shadow-xl border border-yellow-200"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(90deg, rgba(255,192,203,0.1) 1px, transparent 1px),
+                    linear-gradient(rgba(255,192,203,0.1) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '20px 20px'
+                }}
+              >
+                <h1 
+                  className="text-4xl lg:text-6xl font-bold text-red-600 mb-2 text-center transform rotate-1"
+                  style={{ 
+                    fontFamily: 'cursive',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  ONE DAY
+                </h1>
+                <p 
+                  className="text-2xl lg:text-3xl text-blue-600 text-center transform -rotate-1"
+                  style={{ fontFamily: 'cursive' }}
+                >
+                  In July
+                </p>
+              </div>
+              
+              {/* Push pins for title */}
+              <div className="absolute -top-2 left-4 w-4 h-4 bg-red-500 rounded-full shadow-lg border-2 border-red-600"></div>
+              <div className="absolute -top-2 right-4 w-4 h-4 bg-blue-500 rounded-full shadow-lg border-2 border-blue-600"></div>
             </div>
-            <div className="absolute bottom-60 left-32 w-3 h-3 bg-red-400 rounded-full shadow-md"></div>
-            <div className="absolute top-60 left-60 w-3 h-3 bg-yellow-400 rounded-full shadow-md"></div>
-            
-            {/* Doodles */}
-            <svg className="absolute top-80 right-16 w-16 h-16 text-purple-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
           </div>
 
-          {/* Photo Grid - Scrapbook Style */}
-          <div className="relative grid grid-cols-12 gap-4 min-h-screen">
+          {/* Collage Grid - Bulletin Board Style */}
+          <div className="grid grid-cols-12 gap-6 min-h-screen">
             
-            {/* Large center photo */}
-            <div className="col-span-5 row-span-3 relative group">
-              <div 
-                className="bg-white p-3 shadow-xl transform -rotate-1 hover:rotate-0 transition-all duration-300 rounded"
-                style={{ aspectRatio: '4/5' }}
-              >
-                <img 
-                  src={sampleImages[0]} 
-                  alt="Main memory" 
-                  className="w-full h-full object-cover rounded"
-                />
-                <div className="absolute -bottom-2 -right-2 bg-red-500 text-white px-2 py-1 text-xs rounded transform rotate-12 shadow-lg" style={{ fontFamily: 'cursive' }}>
-                  Best Day Ever! ✨
-                </div>
-              </div>
-            </div>
-
-            {/* Gaming device mockup */}
-            <div className="col-span-4 row-span-2 relative">
-              <div 
-                className="bg-gray-800 p-4 rounded-2xl shadow-xl transform rotate-2 hover:rotate-0 transition-all duration-300"
-                style={{ aspectRatio: '16/10' }}
-              >
-                <div className="bg-gray-900 rounded-lg p-2 relative">
+            {/* Large center photo - pinned */}
+            <div className="col-span-12 lg:col-span-5 row-span-3 relative group">
+              <div className="relative">
+                <div 
+                  className="bg-white p-4 shadow-2xl transform -rotate-2 hover:rotate-0 transition-all duration-300 border border-gray-200"
+                  style={{ aspectRatio: '4/5' }}
+                >
                   <img 
-                    src={sampleImages[1]} 
-                    alt="Gaming moment" 
-                    className="w-full h-32 object-cover rounded"
+                    src={sampleImages[0]} 
+                    alt="Main memory" 
+                    className="w-full h-full object-cover"
                   />
-                  <div className="flex justify-between items-center mt-2 text-white text-xs">
-                    <div className="flex space-x-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="mt-3 text-center">
+                    <div className="text-sm text-gray-700" style={{ fontFamily: 'cursive' }}>
+                      Best Day Ever! ✨
                     </div>
-                    <div>PS VITA</div>
                   </div>
                 </div>
-                <div className="absolute -top-3 -left-3 bg-yellow-400 text-black px-2 py-1 text-xs rounded transform -rotate-12 shadow-lg" style={{ fontFamily: 'cursive' }}>
-                  Gaming Time!
-                </div>
+                {/* Push pins */}
+                <div className="absolute -top-2 left-6 w-4 h-4 bg-yellow-500 rounded-full shadow-lg border-2 border-yellow-600"></div>
+                <div className="absolute -top-2 right-6 w-4 h-4 bg-green-500 rounded-full shadow-lg border-2 border-green-600"></div>
               </div>
             </div>
 
-            {/* Small polaroid photos */}
-            <div className="col-span-3 space-y-4">
+            {/* Gaming device mockup - pinned */}
+            <div className="col-span-12 lg:col-span-4 row-span-2 relative">
+              <div className="relative">
+                <div 
+                  className="bg-white p-4 rounded-lg shadow-xl transform rotate-2 hover:rotate-0 transition-all duration-300 border border-gray-200"
+                  style={{ aspectRatio: '16/10' }}
+                >
+                  <div className="bg-gray-900 rounded-lg p-3 relative">
+                    <img 
+                      src={sampleImages[1]} 
+                      alt="Gaming moment" 
+                      className="w-full h-32 object-cover rounded"
+                    />
+                    <div className="flex justify-between items-center mt-3 text-white text-xs">
+                      <div className="flex space-x-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      </div>
+                      <div className="font-mono">PS VITA</div>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-center text-gray-700 text-sm" style={{ fontFamily: 'cursive' }}>
+                    Gaming Session 🎮
+                  </div>
+                </div>
+                {/* Push pin */}
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-purple-500 rounded-full shadow-lg border-2 border-purple-600"></div>
+              </div>
+            </div>
+
+            {/* Small polaroid photos - pinned */}
+            <div className="col-span-12 lg:col-span-3 space-y-6">
               {[2, 3, 4].map((index, i) => (
-                <div key={index} className={`transform ${i % 2 === 0 ? 'rotate-3' : '-rotate-2'} hover:rotate-0 transition-all duration-300`}>
-                  <div className="bg-white p-2 shadow-lg rounded">
+                <div key={index} className="relative">
+                  <div className={`bg-white p-3 shadow-lg transform ${i % 2 === 0 ? 'rotate-3' : '-rotate-2'} hover:rotate-0 transition-all duration-300 border border-gray-200`}>
                     <img 
                       src={sampleImages[index]} 
                       alt={`Memory ${index}`} 
-                      className="w-full h-20 object-cover rounded"
+                      className="w-full h-24 object-cover"
                     />
-                    <div className="h-6 flex items-center justify-center text-xs" style={{ fontFamily: 'cursive' }}>
+                    <div className="mt-2 text-center text-xs text-gray-700" style={{ fontFamily: 'cursive' }}>
                       Moment {index - 1}
                     </div>
                   </div>
+                  {/* Push pin */}
+                  <div className={`absolute -top-2 ${i % 2 === 0 ? 'left-2' : 'right-2'} w-3 h-3 bg-${['red', 'blue', 'green'][i]}-500 rounded-full shadow-md border border-${['red', 'blue', 'green'][i]}-600`}></div>
                 </div>
               ))}
             </div>
 
-            {/* Camera mockup */}
-            <div className="col-span-3 row-span-2 relative">
-              <div 
-                className="bg-gradient-to-br from-gray-300 to-gray-500 p-3 rounded-lg shadow-xl transform -rotate-3 hover:rotate-0 transition-all duration-300"
-                style={{ aspectRatio: '4/3' }}
-              >
-                <div className="bg-black rounded p-2 relative">
-                  <img 
-                    src={sampleImages[5]} 
-                    alt="Through camera lens" 
-                    className="w-full h-24 object-cover rounded"
+            {/* Camera mockup - pinned */}
+            <div className="col-span-12 lg:col-span-3 row-span-2 relative">
+              <div className="relative">
+                <div 
+                  className="bg-white p-4 rounded-lg shadow-xl transform -rotate-3 hover:rotate-0 transition-all duration-300 border border-gray-200"
+                  style={{ aspectRatio: '4/3' }}
+                >
+                  <div className="bg-black rounded p-3 relative">
+                    <img 
+                      src={sampleImages[5]} 
+                      alt="Through camera lens" 
+                      className="w-full h-24 object-cover rounded"
+                    />
+                    <div className="absolute top-2 left-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <div className="text-white text-xs mt-2 text-center font-mono">Canon EOS</div>
+                  </div>
+                  <div className="mt-2 text-center text-gray-700 text-sm" style={{ fontFamily: 'cursive' }}>
+                    Behind the Lens 📸
+                  </div>
+                </div>
+                {/* Push pins */}
+                <div className="absolute -top-2 left-3 w-4 h-4 bg-orange-500 rounded-full shadow-lg border-2 border-orange-600"></div>
+                <div className="absolute -top-2 right-3 w-4 h-4 bg-teal-500 rounded-full shadow-lg border-2 border-teal-600"></div>
+              </div>
+            </div>
+
+            {/* Sticky Note - pinned */}
+            <div className="col-span-12 lg:col-span-4 relative">
+              <div className="relative">
+                <div 
+                  className="bg-yellow-200 p-6 shadow-2xl transform -rotate-2 hover:rotate-0 transition-all duration-300 relative border border-yellow-300"
+                  style={{ aspectRatio: '4/3' }}
+                >
+                  {/* Sticky note corner fold */}
+                  <div className="absolute top-0 right-0 w-8 h-8 bg-yellow-300 transform rotate-45 origin-top-right translate-x-4 -translate-y-4 shadow-sm border-r border-b border-yellow-400"></div>
+                  
+                  {/* Sticky note content */}
+                  <div className="h-full flex flex-col justify-center text-center">
+                    <div className="mb-3">
+                      <h3 className="text-xl font-bold text-gray-800 mb-3" style={{ fontFamily: 'cursive' }}>
+                        Dear {pageData?.name || 'Friend'} 💕
+                      </h3>
+                      <p className="text-sm text-gray-700 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                        Thank you for being part of our beautiful journey. This day in July will forever be etched in our hearts.
+                      </p>
+                      <p className="text-sm text-gray-700 mt-3 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                        Every laugh, every smile, every moment tells our story.
+                      </p>
+                    </div>
+                    <div className="mt-auto">
+                      <p className="text-sm text-gray-600" style={{ fontFamily: 'cursive' }}>
+                        With love,<br/>
+                        <span className="font-bold">The Gang ✨</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Small decorative elements */}
+                  <div className="absolute top-3 left-3 text-pink-500 text-lg">💝</div>
+                  <div className="absolute bottom-3 right-3 text-pink-500 text-lg">🌟</div>
+                </div>
+                
+                {/* Push pin for sticky note */}
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-pink-500 rounded-full shadow-lg border-2 border-pink-600"></div>
+              </div>
+            </div>
+
+            {/* Spotify Embed - pinned to board */}
+            <div className="col-span-12 lg:col-span-8 relative">
+              <div className="relative">
+                <div 
+                  className="bg-white p-4 rounded-xl shadow-xl transform rotate-1 hover:rotate-0 transition-all duration-300 border border-gray-200"
+                  style={{ aspectRatio: '16/9' }}
+                >
+                  <iframe 
+                    data-testid="embed-iframe" 
+                    style={{ borderRadius: '8px' }} 
+                    src="https://open.spotify.com/embed/track/5WOSNVChcadlsCRiqXE45K?utm_source=generator" 
+                    width="100%" 
+                    height="200" 
+                    frameBorder="0" 
+                    allowFullScreen="" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy"
                   />
-                  <div className="absolute top-1 left-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="text-white text-xs mt-1 text-center font-mono">Canon</div>
-                </div>
-                <div className="absolute -bottom-2 -right-2 bg-green-500 text-white px-2 py-1 text-xs rounded transform rotate-6 shadow-lg" style={{ fontFamily: 'cursive' }}>
-                  Behind the lens
-                </div>
-              </div>
-            </div>
-
-            {/* Sticky Note - positioned under PS Vita */}
-            <div className="col-span-4 relative">
-              <div 
-                className="bg-yellow-200 p-4 shadow-2xl transform -rotate-1 hover:rotate-0 transition-all duration-300 relative"
-                style={{ aspectRatio: '4/3' }}
-              >
-                {/* Sticky note corner fold */}
-                <div className="absolute top-0 right-0 w-6 h-6 bg-yellow-300 transform rotate-45 origin-top-right translate-x-3 -translate-y-3 shadow-sm"></div>
-                
-                {/* Sticky note content */}
-                <div className="h-full flex flex-col justify-center text-center">
-                  <div className="mb-3">
-                    <h3 className="text-lg font-bold text-gray-800 mb-2" style={{ fontFamily: 'cursive' }}>
-                      Dear {pageData?.name || 'Friend'} 💕
-                    </h3>
-                    <p className="text-xs text-gray-700 leading-relaxed" style={{ fontFamily: 'cursive' }}>
-                      Thank you for being part of our beautiful journey. This day in July will forever be etched in our hearts.
-                    </p>
-                    <p className="text-xs text-gray-700 mt-2 leading-relaxed" style={{ fontFamily: 'cursive' }}>
-                      Every laugh, every smile, every moment tells our story.
-                    </p>
-                  </div>
-                  <div className="mt-auto">
-                    <p className="text-xs text-gray-600" style={{ fontFamily: 'cursive' }}>
-                      With love,<br/>
-                      <span className="font-bold">The Gang ✨</span>
-                    </p>
+                  <div className="mt-2 text-center text-gray-700 text-sm" style={{ fontFamily: 'cursive' }}>
+                    Our Playlist 🎵
                   </div>
                 </div>
                 
-                {/* Small decorative elements */}
-                <div className="absolute top-2 left-2 text-pink-400 text-xs">💝</div>
-                <div className="absolute bottom-2 right-2 text-pink-400 text-xs">🌟</div>
-                
-                {/* Sticky note label */}
-                <div className="absolute -top-3 -left-3 bg-orange-400 text-white px-2 py-1 text-xs rounded transform -rotate-12 shadow-lg" style={{ fontFamily: 'cursive' }}>
-                  Special Note!
-                </div>
+                {/* Push pins for Spotify */}
+                <div className="absolute -top-2 left-8 w-4 h-4 bg-green-500 rounded-full shadow-lg border-2 border-green-600"></div>
+                <div className="absolute -top-2 right-8 w-4 h-4 bg-red-500 rounded-full shadow-lg border-2 border-red-600"></div>
               </div>
             </div>
 
-            {/* Spotify Embed */}
-            <div className="col-span-8 relative">
-              <div 
-                className="bg-gradient-to-br from-green-800 to-green-900 p-4 rounded-xl shadow-xl transform rotate-1 hover:rotate-0 transition-all duration-300"
-                style={{ aspectRatio: '16/9' }}
-              >
-                <iframe 
-                  data-testid="embed-iframe" 
-                  style={{ borderRadius: '12px' }} 
-                  src="https://open.spotify.com/embed/track/5WOSNVChcadlsCRiqXE45K?utm_source=generator" 
-                  width="100%" 
-                  height="200" 
-                  frameBorder="0" 
-                  allowFullScreen="" 
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                  loading="lazy"
-                />
-                <div className="absolute -top-3 -left-3 bg-green-400 text-black px-3 py-1 text-sm rounded transform -rotate-12 shadow-lg" style={{ fontFamily: 'cursive' }}>
-                  Our Playlist 🎵
-                </div>
-              </div>
-            </div>
-
-            {/* Text elements and stickers - updated for dark theme */}
-            <div className="col-span-12 relative h-32">
+            {/* Memory Cards - scattered and pinned */}
+            <div className="col-span-12 relative h-40">
+              {/* Memory card 1 */}
               <div className="absolute top-4 left-20 transform -rotate-3">
-                <div className="bg-yellow-300 p-3 rounded shadow-lg border-l-4 border-yellow-500">
+                <div className="bg-blue-100 p-4 rounded shadow-xl border-l-4 border-blue-500 border border-blue-200">
                   <p className="text-sm text-gray-800" style={{ fontFamily: 'cursive' }}>
                     "One day we spent together that became a lifetime of memories... 💕"
                   </p>
                 </div>
+                <div className="absolute -top-2 left-2 w-3 h-3 bg-blue-500 rounded-full shadow-md border border-blue-600"></div>
               </div>
               
-              <div className="absolute top-8 right-32 transform rotate-6">
-                <div className="bg-pink-300 p-2 rounded-full shadow-lg">
-                  <span className="text-2xl">🎮</span>
-                </div>
-              </div>
-              
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 rotate-1">
-                <div className="bg-gray-800 border-2 border-red-400 px-4 py-2 rounded shadow-lg border-dashed">
-                  <p className="text-center font-bold text-red-400" style={{ fontFamily: 'cursive' }}>
+              {/* Date stamp */}
+              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 rotate-1">
+                <div className="bg-red-600 text-white px-6 py-3 rounded shadow-xl border-2 border-red-800">
+                  <p className="text-center font-bold text-lg" style={{ fontFamily: 'courier, monospace' }}>
                     18-07-2024
                   </p>
                 </div>
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-red-500 rounded-full shadow-lg border-2 border-red-700"></div>
+              </div>
+
+              {/* Emoji stickers */}
+              <div className="absolute top-8 right-32 transform rotate-12">
+                <div className="bg-white p-3 rounded-full shadow-lg border border-gray-200">
+                  <span className="text-3xl">🎮</span>
+                </div>
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-yellow-500 rounded-full shadow-md border border-yellow-600"></div>
+              </div>
+
+              {/* Memory quote */}
+              <div className="absolute bottom-4 right-20 transform rotate-2">
+                <div className="bg-pink-100 p-3 rounded-lg shadow-lg border border-pink-200 max-w-xs">
+                  <p className="text-xs text-gray-700 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                    "Sometimes the smallest moments take up the most room in your heart"
+                  </p>
+                </div>
+                <div className="absolute -top-2 right-2 w-3 h-3 bg-pink-500 rounded-full shadow-md border border-pink-600"></div>
               </div>
             </div>
+
+
 
           </div>
         </div>
       </main>
-
-      {/* Floating decorative elements */}
-      <div className="fixed bottom-10 right-10 pointer-events-none">
-        <div className="relative">
-          <div className="text-4xl lg:text-6xl animate-bounce" style={{ animationDelay: '0s' }}>🌟</div>
-          <div className="absolute -top-4 -right-4 text-2xl lg:text-4xl animate-bounce" style={{ animationDelay: '1s' }}>✨</div>
-          <div className="absolute -bottom-2 -left-2 text-xl lg:text-3xl animate-bounce" style={{ animationDelay: '2s' }}>💫</div>
-        </div>
-      </div>
-
-      {/* Vinyl Record Player - Bottom Right */}
+      {/* Vinyl Record Player - Bottom Right - styled for bulletin board */}
       <div className="fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-20">
-        <div className="relative w-24 h-24 lg:w-32 lg:h-32">
-          {/* Vinyl Record */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800 rounded-full shadow-2xl animate-spin" style={{ animationDuration: '3s', animationIterationCount: 'infinite' }}>
-            {/* Record grooves */}
-            <div className="absolute inset-2 border border-gray-600 rounded-full opacity-30"></div>
-            <div className="absolute inset-4 border border-gray-600 rounded-full opacity-20"></div>
-            <div className="absolute inset-6 border border-gray-600 rounded-full opacity-15"></div>
-            
-            {/* Center label */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-red-600 rounded-full border-2 border-red-800 flex items-center justify-center">
-                <div className="w-2 h-2 bg-black rounded-full"></div>
+        <div className="relative">
+          {/* Record player base */}
+          <div className="bg-amber-800 p-4 rounded shadow-xl border border-amber-900">
+            <div className="relative w-20 h-20 lg:w-28 lg:h-28">
+              {/* Vinyl Record */}
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800 rounded-full shadow-2xl animate-spin" style={{ animationDuration: '3s', animationIterationCount: 'infinite' }}>
+                {/* Record grooves */}
+                <div className="absolute inset-2 border border-gray-600 rounded-full opacity-30"></div>
+                <div className="absolute inset-4 border border-gray-600 rounded-full opacity-20"></div>
+                
+                {/* Center label */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-red-600 rounded-full border-2 border-red-800 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-black rounded-full"></div>
+                  </div>
+                </div>
               </div>
+              
+              {/* Tonearm */}
+              <div className="absolute -top-1 right-1 w-10 lg:w-14 h-1 bg-gray-400 rounded-full transform origin-right rotate-45 shadow-lg">
+                <div className="absolute right-0 w-2 h-2 bg-gray-600 rounded-full transform translate-x-1 -translate-y-0.5"></div>
+              </div>
+            </div>
+            
+            {/* Record player label */}
+            <div className="mt-2 text-center text-white text-xs" style={{ fontFamily: 'cursive' }}>
+              Vintage Vibes 🎵
             </div>
           </div>
           
-          {/* Tonearm */}
-          <div className="absolute -top-2 right-2 w-12 lg:w-16 h-1 bg-gray-400 rounded-full transform origin-right rotate-45 shadow-lg">
-            <div className="absolute right-0 w-2 h-2 bg-gray-600 rounded-full transform translate-x-1 -translate-y-0.5"></div>
-          </div>
-          
-          {/* Now Playing Label */}
-          <div className="absolute -top-8 left-0 bg-gray-800/90 backdrop-blur-sm text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap" style={{ fontFamily: 'cursive' }}>
-            🎵 Now Playing
-          </div>
-          
-          {/* Song Info - you can replace this with dynamic content later */}
-          <div className="absolute -bottom-12 lg:-bottom-16 left-0 right-0 bg-gray-800/90 backdrop-blur-sm text-white text-xs p-2 rounded shadow-lg text-center" style={{ fontFamily: 'cursive' }}>
-            <div className="font-semibold">Your Song</div>
-            <div className="text-gray-300">Artist Name</div>
-          </div>
+          {/* Push pin for record player */}
+          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full shadow-lg border-2 border-orange-600"></div>
         </div>
       </div>
+
+      {/* Paper texture overlay for authenticity */}
+      <div 
+        className="fixed inset-0 pointer-events-none opacity-5 z-0"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 100% 50%, transparent 20%, rgba(255,255,255,0.1) 21%, rgba(255,255,255,0.1) 34%, transparent 35%, transparent),
+            linear-gradient(0deg, rgba(0,0,0,0.05) 50%, transparent 50%)
+          `,
+          backgroundSize: '30px 30px, 15px 15px'
+        }}
+      ></div>
     </div>
   );
 };
