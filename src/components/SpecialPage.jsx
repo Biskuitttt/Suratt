@@ -11,8 +11,8 @@ const SpecialPage = ({ specialCode, onBack }) => {
 
   // Sample images untuk demo
   const sampleImages = [
-    "/image1.png", "/image2.png", "/image3.png", "/image4.png", "/image5.png", 
-    "/image6.png", "/image7.png", "/image8.png", "/image9.png", "/image10.png"
+    "/image15.png", "/image13.png", "/image14.png", "/image16.png", "/image5.png", 
+    "/image7.png", "/image7.png", "/image8.png", "/image9.png", "/image10.png"
   ];
 
   useEffect(() => {
@@ -473,8 +473,8 @@ const SpecialPage = ({ specialCode, onBack }) => {
                       </p>
                     )}
                     <p className="text-sm text-gray-600" style={{ fontFamily: 'cursive' }}>
-                      With love,<br/>
-                      <span className="font-bold">The Gang ✨</span>
+                      <br/>
+                      <span className="font-bold">Peter Gacor ✨</span>
                     </p>
                   </div>
                   
@@ -497,7 +497,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
                 <div className="mt-4 flex justify-center">
                   <div className="bg-red-600 text-white px-4 py-2 rounded shadow-lg border-2 border-red-800 transform -rotate-2">
                     <p className="text-center font-bold" style={{ fontFamily: 'courier, monospace' }}>
-                      18-07-2024
+                      8/21/2025
                     </p>
                   </div>
                 </div>
@@ -732,8 +732,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
                     </div>
                     <div className="mt-auto">
                       <p className="text-sm text-gray-600" style={{ fontFamily: 'cursive' }}>
-                        With love,<br/>
-                        <span className="font-bold">The Gang ✨</span>
+                        <span className="font-bold">Peter Gacor ✨</span>
                       </p>
                     </div>
                   </div>
@@ -793,7 +792,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
               <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 rotate-1">
                 <div className="bg-red-600 text-white px-6 py-3 rounded shadow-xl border-2 border-red-800">
                   <p className="text-center font-bold text-lg" style={{ fontFamily: 'courier, monospace' }}>
-                    18-07-2024
+                    8/21/2025
                   </p>
                 </div>
                 <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-red-500 rounded-full shadow-lg border-2 border-red-700"></div>
