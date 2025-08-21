@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-const MusicPlayer = ({ isPlaying, onToggle }) => {
+const MusicPlayer = ({ isPlaying, onToggle, audioRef }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (isPlaying) {
@@ -15,6 +18,49 @@ const MusicPlayer = ({ isPlaying, onToggle }) => {
       setIsVisible(false);
     }
   }, [isPlaying]);
+
+  // Audio event listeners
+  useEffect(() => {
+    const audio = audioRef?.current;
+    if (!audio) return;
+
+    const updateTime = () => setCurrentTime(audio.currentTime);
+    const updateDuration = () => {
+      setDuration(audio.duration);
+      setIsLoading(false);
+    };
+    const handleLoad = () => setIsLoading(false);
+    const handleError = () => {
+      console.error('Audio loading error');
+      setIsLoading(false);
+    };
+
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('loadeddata', handleLoad);
+    audio.addEventListener('error', handleError);
+
+    // Initial check if metadata is already loaded
+    if (audio.duration) {
+      setDuration(audio.duration);
+      setIsLoading(false);
+    }
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('loadeddata', handleLoad);
+      audio.removeEventListener('error', handleError);
+    };
+  }, [audioRef]);
+
+  // Format time helper
+  const formatTime = (time) => {
+    if (isNaN(time)) return '0:00';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded);
@@ -149,7 +195,7 @@ const MusicPlayer = ({ isPlaying, onToggle }) => {
                 whiteSpace: isExpanded ? 'normal' : 'nowrap'
               }}
             >
-              Kita Ke sana
+              {isLoading ? 'Loading...' : 'Kita Ke sana'}
             </div>
 
             <div
@@ -179,11 +225,11 @@ const MusicPlayer = ({ isPlaying, onToggle }) => {
                 >
                   <div
                     style={{
-                      width: '35%',
+                      width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
                       height: '100%',
                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                       borderRadius: '2px',
-                      animation: 'progress 3s ease-in-out infinite'
+                      transition: 'width 0.3s ease'
                     }}
                   />
                 </div>
@@ -196,8 +242,8 @@ const MusicPlayer = ({ isPlaying, onToggle }) => {
                     color: '#666'
                   }}
                 >
-                  <span>1:23</span>
-                  <span>3:45</span>
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{isLoading ? '--:--' : formatTime(duration)}</span>
                 </div>
               </div>
             )}
