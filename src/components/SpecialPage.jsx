@@ -57,8 +57,10 @@ const SpecialPage = ({ specialCode, onBack }) => {
         }
       }
 
-      // Get the participant's display name from Firebase
+      // Get the participant's display name and memo from Firebase
       let participantDisplayName = specialCode || 'Guest';
+      let participantMemo1 = null;
+      let participantMemo2 = null;
       
       try {
         const specialCodeData = await FirebaseService.getSpecialCodeData(specialCode);
@@ -67,6 +69,22 @@ const SpecialPage = ({ specialCode, onBack }) => {
           console.log('📝 Using display name from Firebase:', participantDisplayName);
         } else {
           console.log('📝 No name field found in Firebase, using code:', participantDisplayName);
+        }
+        
+        // Ambil field memo1 jika ada
+        if (specialCodeData && specialCodeData.memo1) {
+          participantMemo1 = specialCodeData.memo1;
+          console.log('📝 Found memo1 for participant:', participantMemo1);
+        } else {
+          console.log('📝 No memo1 field found for this participant');
+        }
+        
+        // Ambil field memo2 jika ada
+        if (specialCodeData && specialCodeData.memo2) {
+          participantMemo2 = specialCodeData.memo2;
+          console.log('📝 Found memo2 for participant:', participantMemo2);
+        } else {
+          console.log('📝 No memo2 field found for this participant');
         }
       } catch (nameError) {
         console.error('Error getting participant name from Firebase:', nameError);
@@ -78,7 +96,9 @@ const SpecialPage = ({ specialCode, onBack }) => {
         setPageData({
           name: participantDisplayName,
           title: 'One Day in UMN',
-          description: 'Our special memories together'
+          description: 'Our special memories together',
+          memo1: participantMemo1,
+          memo2: participantMemo2
         });
         setLoading(false);
       }, 1500);
@@ -442,12 +462,16 @@ const SpecialPage = ({ specialCode, onBack }) => {
                     <h3 className="text-xl font-bold text-gray-800 mb-4" style={{ fontFamily: 'cursive' }}>
                       Dear {pageData?.name || 'Friend'} 💕
                     </h3>
-                    <p className="text-sm text-gray-700 leading-relaxed mb-3" style={{ fontFamily: 'cursive' }}>
-                      Thank you for being part of our beautiful journey. This day in July will forever be etched in our hearts.
-                    </p>
-                    <p className="text-sm text-gray-700 leading-relaxed mb-4" style={{ fontFamily: 'cursive' }}>
-                      Every laugh, every smile, every moment tells our story.
-                    </p>
+                    {pageData?.memo1 && (
+                      <p className="text-sm text-gray-700 leading-relaxed mb-3" style={{ fontFamily: 'cursive' }}>
+                        {pageData.memo1}
+                      </p>
+                    )}
+                    {pageData?.memo2 && (
+                      <p className="text-sm text-gray-700 leading-relaxed mb-4" style={{ fontFamily: 'cursive' }}>
+                        {pageData.memo2}
+                      </p>
+                    )}
                     <p className="text-sm text-gray-600" style={{ fontFamily: 'cursive' }}>
                       With love,<br/>
                       <span className="font-bold">The Gang ✨</span>
@@ -695,12 +719,16 @@ const SpecialPage = ({ specialCode, onBack }) => {
                       <h3 className="text-xl font-bold text-gray-800 mb-3" style={{ fontFamily: 'cursive' }}>
                         Dear {pageData?.name || 'Friend'} 💕
                       </h3>
-                      <p className="text-sm text-gray-700 leading-relaxed" style={{ fontFamily: 'cursive' }}>
-                        Thank you for being part of our beautiful journey. This day in July will forever be etched in our hearts.
-                      </p>
-                      <p className="text-sm text-gray-700 mt-3 leading-relaxed" style={{ fontFamily: 'cursive' }}>
-                        Every laugh, every smile, every moment tells our story.
-                      </p>
+                      {pageData?.memo1 && (
+                        <p className="text-sm text-gray-700 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                          {pageData.memo1}
+                        </p>
+                      )}
+                      {pageData?.memo2 && (
+                        <p className="text-sm text-gray-700 mt-3 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                          {pageData.memo2}
+                        </p>
+                      )}
                     </div>
                     <div className="mt-auto">
                       <p className="text-sm text-gray-600" style={{ fontFamily: 'cursive' }}>
