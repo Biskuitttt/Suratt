@@ -140,7 +140,7 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
   const handleCodeSubmit = async (e) => {
     e.preventDefault();
     if (!specialCode.trim()) {
-      setError('Please enter your name');
+      setError('Invalid Code');
       return;
     }
 
@@ -169,13 +169,13 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
           setIsFlipped(false);
         } else {
           // Fallback ke special page jika tidak ada URL khusus
-          onSpecialCodeSuccess(specialCode.toLowerCase());
+          onSpecialCodeSuccess(specialCode.trim());
         }
       } else {
         // Check if collection is empty and suggest creating data
         const allCodes = await FirebaseService.getAllSpecialCodes();
         if (allCodes.length === 0) {
-          setError('No names found in database. Check console for setup instructions.');
+          setError('Invalid Code');
           console.log('=== SETUP REQUIRED ===');
           console.log('Your Firestore collection "specialCodes" is empty.');
           console.log('');
@@ -187,8 +187,8 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
           // Make FirebaseService available globally for easy access
           window.FirebaseService = FirebaseService;
         } else {
-          setError('Name not found! Check available names in console.');
-          console.log('Available names:');
+          setError('Invalid Code');
+          console.log('Available codes:');
           allCodes.forEach(code => {
             const displayName = code.name || 'Unknown';
             const codeId = code.code || displayName.toLowerCase().replace(/\s+/g, '');
@@ -198,7 +198,7 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
       }
     } catch (err) {
       console.error('Name validation error:', err);
-      setError('Error checking name. Please try again.');
+      setError('Invalid Code');
     } finally {
       setIsLoading(false);
     }
@@ -358,14 +358,6 @@ const Polaroid = ({ onSpecialCodeSuccess }) => {
             </div>
           )}
           
-          <div style={{ 
-            fontSize: '10px', 
-            color: '#999', 
-            textAlign: 'center',
-            fontStyle: 'italic'
-          }}>
-            Enter a name from the group (e.g., "Kevin")
-          </div>
         </div>
       </div>
 

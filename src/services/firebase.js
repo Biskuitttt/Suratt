@@ -201,21 +201,64 @@ export class FirebaseService {
     }
   }
 
-  // Validasi special code saja (email divalidasi oleh Firebase Auth)
+  // Validasi special code dengan strict checking - hanya document ID yang benar-benar ada
   static async validateSpecialCode(code) {
-    // Try the original code first
-    let data = await this.getSpecialCodeData(code);
-    if (data) return true;
-    
-    // If not found, try the canonical name
-    const canonicalName = this.getCanonicalName(code);
-    if (canonicalName.toLowerCase() !== code.toLowerCase()) {
-      console.log(`Trying canonical name: ${code} → ${canonicalName}`);
-      data = await this.getSpecialCodeData(canonicalName.toLowerCase());
-      if (data) return true;
+    try {
+      console.log('🔍 Strict validation for code:', code);
+      
+      if (!code || code.trim() === '') {
+        console.log('❌ Empty code provided');
+        return false;
+      }
+      
+      const trimmedCode = code.trim();
+      
+      // Try exact match first
+      console.log('Checking exact match in Firestore:', trimmedCode);
+      let docRef = doc(db, 'specialCodes', trimmedCode);
+      let docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        console.log('✅ Document found (exact match):', trimmedCode, data);
+        
+        // Cek juga apakah document aktif (jika ada field active)
+        if (data.active === false) {
+          console.log('❌ Document exists but is deactivated:', trimmedCode);
+          return false;
+        }
+        
+        console.log('✅ Valid code with active status (exact):', trimmedCode);
+        return true;
+      }
+      
+      // Try case-insensitive match by getting all documents and comparing
+      console.log('No exact match, trying case-insensitive search...');
+      const allCodes = await this.getAllSpecialCodes();
+      
+      for (const codeData of allCodes) {
+        const docId = codeData.code;
+        if (docId && docId.toLowerCase() === trimmedCode.toLowerCase()) {
+          console.log('✅ Found case-insensitive match:', docId, 'for input:', trimmedCode);
+          
+          // Check if active
+          if (codeData.active === false) {
+            console.log('❌ Document exists but is deactivated:', docId);
+            return false;
+          }
+          
+          console.log('✅ Valid code with active status (case-insensitive):', docId);
+          return true;
+        }
+      }
+      
+      console.log('❌ No document match found for:', trimmedCode);
+      return false;
+      
+    } catch (error) {
+      console.error('❌ Error validating special code:', error);
+      return false; // Fail securely
     }
-    
-    return false;
   }
 
   // Fix existing data - convert document IDs to lowercase
