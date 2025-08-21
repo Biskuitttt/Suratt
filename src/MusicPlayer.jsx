@@ -8,16 +8,12 @@ const MusicPlayer = ({ isPlaying, onToggle, audioRef }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (isPlaying) {
-      // Delay tampil setelah intro dimulai
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else {
-      setIsVisible(false);
-    }
-  }, [isPlaying]);
+    // Show music player after intro starts, regardless of playing state
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []); // Remove isPlaying dependency
 
   // Audio event listeners
   useEffect(() => {
@@ -66,6 +62,11 @@ const MusicPlayer = ({ isPlaying, onToggle, audioRef }) => {
     setIsExpanded(!isExpanded);
   };
 
+  const handlePlayPause = (e) => {
+    e.stopPropagation();
+    onToggle && onToggle();
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -80,247 +81,375 @@ const MusicPlayer = ({ isPlaying, onToggle, audioRef }) => {
     >
       <div
         style={{
-          background: 'rgba(0, 0, 0, 0.85)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: isExpanded ? '16px' : '25px',
-          padding: isExpanded ? '16px' : '12px 16px',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
           cursor: 'pointer',
           transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
           transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.9)',
           opacity: isVisible ? 1 : 0,
-          minWidth: isExpanded ? '280px' : 'auto',
-          maxWidth: isExpanded ? '320px' : 'auto'
         }}
         onClick={toggleExpanded}
-        onMouseEnter={(e) => {
-          e.target.style.transform = 'translateY(-2px) scale(1.02)';
-          e.target.style.boxShadow = '0 12px 40px rgba(0, 0, 0, 0.4)';
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.transform = 'translateY(0) scale(1)';
-          e.target.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.3)';
-        }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Album Cover / Visualizer */}
-          <div
+        {/* Vinyl Record Player */}
+        <div className="relative">
+          {/* Record player base */}
+          <div 
             style={{
-              width: isExpanded ? '60px' : '40px',
-              height: isExpanded ? '60px' : '40px',
+              background: '#92400e', // amber-800
+              padding: isExpanded ? '20px' : '16px',
               borderRadius: '8px',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-              overflow: 'hidden',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
+              border: '1px solid #78350f', // amber-900
               transition: 'all 0.3s ease'
             }}
           >
-            {/* Music visualizer bars */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2px', height: '50%' }}>
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: '3px',
-                    height: '100%',
-                    background: 'rgba(255, 255, 255, 0.8)',
-                    borderRadius: '1px',
-                    animation: `musicBar 1.${i}s ease-in-out infinite alternate`,
-                    animationDelay: `0.${i * 2}s`
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Pulsing background effect */}
-            <div
+            <div 
               style={{
-                position: 'absolute',
-                inset: '-10px',
-                background: 'radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%)',
-                borderRadius: '50%',
-                animation: 'pulse 2s ease-in-out infinite'
-              }}
-            />
-          </div>
-
-          {/* Song Info */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: isExpanded ? '4px' : '0'
+                position: 'relative',
+                width: isExpanded ? '120px' : '80px',
+                height: isExpanded ? '120px' : '80px',
+                transition: 'all 0.3s ease'
               }}
             >
-              {/* Playing indicator */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <div
+              {/* Vinyl Record */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '50%',
+                  boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
+                  overflow: 'hidden',
+                  animation: isPlaying ? 'spin 3s linear infinite' : 'none'
+                }}
+              >
+                <img 
+                  src="/vinyl.png" 
+                  alt="Vinyl Record" 
                   style={{
-                    width: '6px',
-                    height: '6px',
-                    borderRadius: '50%',
-                    background: '#22c55e',
-                    animation: 'pulse 1.5s ease-in-out infinite'
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '50%'
                   }}
                 />
-                <span
+                
+                {/* Center label overlay */}
+                <div 
                   style={{
-                    fontSize: '0.75rem',
-                    color: '#22c55e',
-                    fontWeight: '500',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                 >
-                  Playing
-                </span>
+                  <div 
+                    style={{
+                      width: isExpanded ? '32px' : '24px',
+                      height: isExpanded ? '32px' : '24px',
+                      background: '#dc2626', // red-600
+                      borderRadius: '50%',
+                      border: '2px solid #991b1b', // red-800
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.3)',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <div 
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        background: '#000000',
+                        borderRadius: '50%',
+                        boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)'
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                {/* Subtle vinyl grooves overlay */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    inset: '8px',
+                    border: '1px solid rgba(0, 0, 0, 0.1)',
+                    borderRadius: '50%'
+                  }}
+                />
+                <div 
+                  style={{
+                    position: 'absolute',
+                    inset: '12px',
+                    border: '1px solid rgba(0, 0, 0, 0.05)',
+                    borderRadius: '50%'
+                  }}
+                />
+                <div 
+                  style={{
+                    position: 'absolute',
+                    inset: '16px',
+                    border: '1px solid rgba(0, 0, 0, 0.05)',
+                    borderRadius: '50%'
+                  }}
+                />
+                
+                {/* Vinyl shine effect */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, transparent 100%)',
+                    opacity: 0.3
+                  }}
+                />
+              </div>
+              
+              {/* Tonearm */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: isExpanded ? '8px' : '8px',
+                  right: isExpanded ? '12px' : '12px',
+                  width: isExpanded ? '56px' : '40px',
+                  height: '4px',
+                  background: '#d1d5db', // gray-300
+                  borderRadius: '2px',
+                  transformOrigin: 'right center',
+                  transform: 'rotate(-65deg)',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                  borderTop: '1px solid #6b7280', // gray-500
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div 
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    width: '8px',
+                    height: '8px',
+                    background: '#4b5563', // gray-600
+                    borderRadius: '50%',
+                    transform: 'translate(4px, -2px)',
+                    border: '1px solid #374151' // gray-700
+                  }}
+                />
+                {/* Tonearm counterweight */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    width: '6px',
+                    height: '6px',
+                    background: '#6b7280', // gray-500
+                    borderRadius: '50%',
+                    transform: 'translate(-4px, -1px)'
+                  }}
+                />
               </div>
             </div>
 
-            <div
-              style={{
-                color: '#ffffff',
-                fontSize: isExpanded ? '0.95rem' : '0.85rem',
-                fontWeight: '600',
-                lineHeight: 1.3,
-                marginBottom: isExpanded ? '2px' : '0',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: isExpanded ? 'normal' : 'nowrap'
-              }}
-            >
-              {isLoading ? 'Loading...' : 'Kita Ke sana'}
-            </div>
-
-            <div
-              style={{
-                color: '#888888',
-                fontSize: isExpanded ? '0.8rem' : '0.75rem',
-                fontWeight: '400',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              Hindia
-            </div>
-
-            {/* Progress bar (only when expanded) */}
+            {/* Expanded Controls */}
             {isExpanded && (
-              <div style={{ marginTop: '12px' }}>
-                <div
-                  style={{
-                    width: '100%',
-                    height: '3px',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    borderRadius: '2px',
-                    overflow: 'hidden'
-                  }}
-                >
+              <div style={{ marginTop: '16px' }}>
+                {/* Song Info */}
+                <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+                  <div 
+                    style={{
+                      color: '#ffffff',
+                      fontSize: '0.95rem',
+                      fontWeight: '600',
+                      marginBottom: '4px'
+                    }}
+                  >
+                    {isLoading ? 'Loading...' : 'Kita Ke sana'}
+                  </div>
+                  <div 
+                    style={{
+                      color: '#d1d5db',
+                      fontSize: '0.8rem',
+                      fontWeight: '400'
+                    }}
+                  >
+                    Hindia
+                  </div>
+                </div>
+
+                {/* Progress bar */}
+                <div style={{ marginBottom: '12px' }}>
                   <div
                     style={{
-                      width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
-                      height: '100%',
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      width: '100%',
+                      height: '3px',
+                      background: 'rgba(255, 255, 255, 0.1)',
                       borderRadius: '2px',
-                      transition: 'width 0.3s ease'
+                      overflow: 'hidden'
                     }}
-                  />
+                  >
+                    <div
+                      style={{
+                        width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%',
+                        height: '100%',
+                        background: '#dc2626', // red-600
+                        borderRadius: '2px',
+                        transition: 'width 0.3s ease'
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginTop: '4px',
+                      fontSize: '0.7rem',
+                      color: '#9ca3af' // gray-400
+                    }}
+                  >
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{isLoading ? '--:--' : formatTime(duration)}</span>
+                  </div>
                 </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    marginTop: '4px',
-                    fontSize: '0.7rem',
-                    color: '#666'
-                  }}
-                >
-                  <span>{formatTime(currentTime)}</span>
-                  <span>{isLoading ? '--:--' : formatTime(duration)}</span>
+
+                {/* Control Button */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <button
+                    onClick={handlePlayPause}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '40px',
+                      height: '40px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      color: '#ffffff'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
+                  >
+                    {isPlaying ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16" />
+                        <rect x="14" y="4" width="4" height="16" />
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5,3 19,12 5,21" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Controls (only when expanded) */}
-          {isExpanded && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggle && onToggle();
-                }}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '36px',
-                  height: '36px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  color: '#ffffff'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                }}
-              >
-                {isPlaying ? (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="6" y="4" width="4" height="16" />
-                    <rect x="14" y="4" width="4" height="16" />
-                  </svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="5,3 19,12 5,21" />
-                  </svg>
-                )}
-              </button>
-            </div>
-          )}
-
-          {/* Expand/Collapse indicator */}
-          {!isExpanded && (
-            <div
+        {/* Musical notes floating above record player */}
+        {isPlaying && (
+          <>
+            <div 
               style={{
-                color: 'rgba(255, 255, 255, 0.5)',
-                fontSize: '0.7rem',
-                transform: 'rotate(90deg)'
+                position: 'absolute',
+                top: '-64px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                color: '#92400e', // amber-700
+                fontSize: isExpanded ? '1.25rem' : '1rem',
+                animation: 'bounce 2s infinite'
               }}
             >
-              ⋯
+              ♪
             </div>
-          )}
-        </div>
+            <div 
+              style={{
+                position: 'absolute',
+                top: '-48px',
+                left: '8px',
+                color: '#d97706', // amber-600
+                fontSize: isExpanded ? '1.125rem' : '0.875rem',
+                animation: 'bounce 2.5s infinite 0.5s'
+              }}
+            >
+              ♫
+            </div>
+            <div 
+              style={{
+                position: 'absolute',
+                top: '-56px',
+                left: '-4px',
+                color: '#78350f', // amber-800
+                fontSize: isExpanded ? '1rem' : '0.75rem',
+                animation: 'bounce 3s infinite 1s'
+              }}
+            >
+              ♬
+            </div>
+            <div 
+              style={{
+                position: 'absolute',
+                top: '-40px',
+                left: '16px',
+                color: '#f59e0b', // amber-500
+                fontSize: isExpanded ? '0.875rem' : '0.625rem',
+                animation: 'bounce 2.2s infinite 1.5s'
+              }}
+            >
+              ♩
+            </div>
+          </>
+        )}
+
+        {/* Status indicator */}
+        {!isExpanded && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              width: '16px',
+              height: '16px',
+              background: isPlaying ? '#22c55e' : '#ef4444', // green-500 or red-500
+              borderRadius: '50%',
+              border: '2px solid #ffffff',
+              animation: isPlaying ? 'pulse 2s infinite' : 'none'
+            }}
+          />
+        )}
       </div>
 
       <style jsx>{`
-        @keyframes musicBar {
-          0% { transform: scaleY(0.3); opacity: 0.7; }
-          100% { transform: scaleY(1); opacity: 1; }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes bounce {
+          0%, 100% { 
+            transform: translateY(0px);
+            opacity: 0.6;
+          }
+          50% { 
+            transform: translateY(-8px);
+            opacity: 1;
+          }
         }
         
         @keyframes pulse {
-          0%, 100% { opacity: 0.7; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.1); }
-        }
-        
-        @keyframes progress {
-          0% { transform: translateX(-10px); }
-          50% { transform: translateX(5px); }
-          100% { transform: translateX(-10px); }
+          0%, 100% { 
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% { 
+            opacity: 0.7;
+            transform: scale(1.1);
+          }
         }
       `}</style>
     </div>
