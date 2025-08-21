@@ -112,10 +112,10 @@ function Intro({ onComplete }) {
 
   // Array text yang akan ditampilkan satu per satu
   const introTexts = [
-    "Welcome to our world",
-    "Where creativity meets innovation", 
-    "Every moment tells a story",
-    "Let's create something amazing together"
+    "Hallo Kalung Ulur - 82",
+    "Ini Cerita Kita", 
+    "Dari Peter, Untuk Kalian, Karena Kita",
+    "Semoga Cerita Ini Bisa Menghibur Kalian",
   ];
 
   // Detect mobile device

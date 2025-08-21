@@ -80,7 +80,7 @@ const StartScreen = ({ onStart }) => {
             fontFamily: 'system-ui, -apple-system, sans-serif'
           }}
         >
-          Creative Studio
+          Peter's World
         </h1>
 
         {/* Subtitle */}

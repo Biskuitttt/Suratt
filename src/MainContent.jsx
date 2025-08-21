@@ -534,7 +534,7 @@ function MainContent({ user }) {
       <div className="relative z-10 min-h-screen">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16">
-            <h1 className="text-6xl font-bold text-stone-100 mb-4 hero-title">Creative Studio</h1>
+            <h1 className="text-6xl font-bold text-stone-100 mb-4 hero-title">Peter's World</h1>
             <p className="text-xl text-stone-300 hero-subtitle">Where stories come to life</p>
           </div>
         </div>
