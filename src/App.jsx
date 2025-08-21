@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 
 // Import components
+import StartScreen from "./StartScreen";
 import Intro from "./Intro";
 import MainContent from "./MainContent";
+import MusicPlayer from "./MusicPlayer";
 import Auth from "./components/Auth";
 
 // Firebase
@@ -12,9 +14,10 @@ import { onAuthStateChanged, isSignInWithEmailLink, signInWithEmailLink } from "
 import { FirebaseService } from "./services/firebase";
 
 function App() {
-  const [showIntro, setShowIntro] = useState(true);
+  const [currentScreen, setCurrentScreen] = useState('start'); // 'start', 'intro', 'main'
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [user, setUser] = useState(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   // Listen perubahan auth
   useEffect(() => {
@@ -51,13 +54,40 @@ function App() {
     }
   }, []);
 
+  const handleStart = () => {
+    setIsTransitioning(true);
+    setIsMusicPlaying(true); // Start music when user clicks start
+    
+    setTimeout(() => {
+      setCurrentScreen('intro');
+      setIsTransitioning(false);
+    }, 800);
+  };
+
   const handleIntroComplete = () => {
     setIsTransitioning(true);
 
     setTimeout(() => {
-      setShowIntro(false);
+      setCurrentScreen('main');
       setIsTransitioning(false);
     }, 800);
+  };
+
+  const toggleMusic = () => {
+    setIsMusicPlaying(!isMusicPlaying);
+  };
+
+  const renderCurrentScreen = () => {
+    switch (currentScreen) {
+      case 'start':
+        return <StartScreen onStart={handleStart} />;
+      case 'intro':
+        return <Intro onComplete={handleIntroComplete} />;
+      case 'main':
+        return <MainContent user={user} />;
+      default:
+        return <StartScreen onStart={handleStart} />;
+    }
   };
 
   return (
@@ -68,12 +98,16 @@ function App() {
           opacity: isTransitioning ? 0 : 1,
         }}
       >
-        {showIntro ? (
-          <Intro onComplete={handleIntroComplete} />
-        ) : (
-          <MainContent user={user} />
-        )}
+        {renderCurrentScreen()}
       </div>
+
+      {/* Music Player - only show after start screen */}
+      {currentScreen !== 'start' && (
+        <MusicPlayer 
+          isPlaying={isMusicPlaying} 
+          onToggle={toggleMusic}
+        />
+      )}
     </div>
   );
 }
