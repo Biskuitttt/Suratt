@@ -392,24 +392,45 @@ const SpecialPage = ({ specialCode, onBack }) => {
                 <div className="w-full h-0.5 bg-green-200 mt-2"></div>
               </div>
 
-              {/* Photo strip */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                {[2, 3, 4].map((index, i) => (
-                  <div key={index} className="relative">
-                    <div className={`bg-white p-2 shadow-md transform ${i % 2 === 0 ? 'rotate-2' : '-rotate-2'} border border-gray-300`}>
+              {/* Photo strip - Reverse Pyramid Layout */}
+              <div className="space-y-4 mb-6">
+                {/* Top Row - Moment 1 and Moment 2 */}
+                <div className="grid grid-cols-2 gap-4">
+                  {[2, 3].map((index, i) => (
+                    <div key={index} className="relative">
+                      <div className={`bg-white p-2 shadow-md transform ${i % 2 === 0 ? 'rotate-2' : '-rotate-2'} border border-gray-300`}>
+                        <img 
+                          src={sampleImages[index]} 
+                          alt={`Memory ${index}`} 
+                          className="w-full h-40 object-cover"
+                        />
+                        <div className="mt-1 text-center text-xs text-gray-700" style={{ fontFamily: 'cursive' }}>
+                          Moment {index - 1}
+                        </div>
+                      </div>
+                      {/* Corner tape */}
+                      <div className={`absolute -top-1 ${i % 2 === 0 ? '-left-1' : '-right-1'} w-8 h-4 bg-yellow-400 transform rotate-45 opacity-70 shadow`}></div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Bottom Row - Moment 3 (centered) */}
+                <div className="flex justify-center">
+                  <div className="relative w-1/2">
+                    <div className="bg-white p-2 shadow-md transform -rotate-1 border border-gray-300">
                       <img 
-                        src={sampleImages[index]} 
-                        alt={`Memory ${index}`} 
+                        src={sampleImages[4]} 
+                        alt="Memory 4" 
                         className="w-full h-40 object-cover"
                       />
                       <div className="mt-1 text-center text-xs text-gray-700" style={{ fontFamily: 'cursive' }}>
-                        Moment {index - 1}
+                        Moment 3
                       </div>
                     </div>
                     {/* Corner tape */}
-                    <div className={`absolute -top-1 ${i % 2 === 0 ? '-left-1' : '-right-1'} w-8 h-4 bg-yellow-400 transform rotate-45 opacity-70 shadow`}></div>
+                    <div className="absolute -top-1 -right-1 w-8 h-4 bg-yellow-400 transform rotate-45 opacity-70 shadow"></div>
                   </div>
-                ))}
+                </div>
               </div>
 
               {/* Camera section */}
@@ -525,19 +546,25 @@ const SpecialPage = ({ specialCode, onBack }) => {
               {/* Spotify player */}
               <div className="relative mb-6">
                 <div className="bg-green-50 p-4 rounded-xl shadow-lg transform rotate-2 border border-green-200">
-                  <iframe 
-                    data-testid="embed-iframe" 
-                    style={{ borderRadius: '8px' }} 
-                    src="https://open.spotify.com/embed/track/5WOSNVChcadlsCRiqXE45K?utm_source=generator" 
-                    width="100%" 
-                    height="152" 
-                    frameBorder="0" 
-                    allowFullScreen="" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                    loading="lazy"
-                  />
+                  <div className="relative overflow-hidden rounded-lg bg-white shadow-inner">
+                    <iframe 
+                      data-testid="embed-iframe" 
+                      style={{ 
+                        borderRadius: '8px', 
+                        border: 'none',
+                        display: 'block'
+                      }} 
+                      src="https://open.spotify.com/embed/playlist/1fhe63s4CJ4U2SpP5E7Xu6?utm_source=generator" 
+                      width="100%" 
+                      height="352" 
+                      frameBorder="0" 
+                      allowFullScreen="" 
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                      loading="lazy"
+                    />
+                  </div>
                   <div className="mt-3 text-center text-gray-700 text-sm" style={{ fontFamily: 'cursive' }}>
-                    The song that reminds us of this day 🎶
+                    Our special playlist for this day 🎶
                   </div>
                 </div>
                 {/* Musical notes decoration */}
