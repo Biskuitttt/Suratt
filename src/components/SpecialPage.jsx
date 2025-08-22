@@ -1,6 +1,7 @@
 // src/components/SpecialPage.jsx
 import React, { useState, useEffect } from 'react';
 import { FirebaseService } from '../services/firebase';
+import PhotoGalleryPage from './PhotoGalleryPage';
 
 const SpecialPage = ({ specialCode, onBack }) => {
   const [pageData, setPageData] = useState(null);
@@ -8,6 +9,7 @@ const SpecialPage = ({ specialCode, onBack }) => {
   const [participantPhoto, setParticipantPhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showGallery, setShowGallery] = useState(false); // New state for gallery view
 
   // Sample images untuk demo
   const sampleImages = [
@@ -109,6 +111,25 @@ const SpecialPage = ({ specialCode, onBack }) => {
     }
   };
 
+  // Handler for gallery navigation
+  const handleShowGallery = () => {
+    setShowGallery(true);
+  };
+
+  const handleBackFromGallery = () => {
+    setShowGallery(false);
+  };
+
+  // Show gallery if active
+  if (showGallery) {
+    return (
+      <PhotoGalleryPage 
+        specialCode={specialCode}
+        onBack={handleBackFromGallery}
+      />
+    );
+  }
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-amber-100 flex items-center justify-center z-50" style={{ margin: 0, padding: 0 }}>
@@ -197,6 +218,9 @@ const SpecialPage = ({ specialCode, onBack }) => {
             </svg>
             Back
           </button>
+
+          {/* NEW: Gallery Button */}
+          
         </div>
       </header>
 
@@ -587,6 +611,43 @@ const SpecialPage = ({ specialCode, onBack }) => {
               </div>
             </div>
 
+            {/* NEW: Gallery Access Card for Mobile */}
+            <div 
+              className="bg-white mx-4 p-6 shadow-xl rounded-lg border border-gray-200 transform rotate-1"
+              style={{
+                backgroundImage: `
+                  linear-gradient(90deg, rgba(255,215,0,0.1) 1px, transparent 1px),
+                  linear-gradient(rgba(255,215,0,0.1) 1px, transparent 1px)
+                `,
+                backgroundSize: '20px 20px'
+              }}
+            >
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-amber-600 transform -rotate-1 mb-4" style={{ fontFamily: 'cursive' }}>
+                  Photo Gallery 📸
+                </h2>
+                <div className="w-full h-0.5 bg-amber-200 mt-2 mb-6"></div>
+                
+                <p className="text-sm text-gray-700 mb-6 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                  Want to see more photos? Check out our interactive photo gallery where you can drag and arrange polaroid photos!
+                </p>
+                
+                <button
+                  onClick={handleShowGallery}
+                  className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-bold"
+                  style={{ fontFamily: 'cursive' }}
+                >
+                  📸 Open Gallery ✨
+                </button>
+              </div>
+              
+              {/* Decorative elements */}
+              <div className="absolute top-2 left-2 text-yellow-500 text-lg">📷</div>
+              <div className="absolute top-2 right-2 text-pink-500 text-lg">💫</div>
+              <div className="absolute bottom-2 left-2 text-purple-500 text-lg">🎨</div>
+              <div className="absolute bottom-2 right-2 text-blue-500 text-lg">✨</div>
+            </div>
+
             {/* Bottom spacing for mobile */}
             <div className="h-20"></div>
           </div>
@@ -597,9 +658,9 @@ const SpecialPage = ({ specialCode, onBack }) => {
             </div>
           </div>
 
-          {/* Desktop: Bulletin Board, Mobile: Scrapbook */}
+          {/* Desktop: Bulletin Board Layout */}
           <div className="hidden lg:grid grid-cols-12 gap-6 min-h-screen">
-            {/* Desktop bulletin board layout remains the same */}
+            {/* All existing desktop content remains the same... */}
             
             {/* Large center photo - pinned */}
             <div className="col-span-12 lg:col-span-5 row-span-3 relative group">
@@ -842,16 +903,33 @@ const SpecialPage = ({ specialCode, onBack }) => {
                 </div>
                 <div className="absolute -top-2 right-2 w-3 h-3 bg-pink-500 rounded-full shadow-md border border-pink-600"></div>
               </div>
+              
+              {/* NEW: Gallery Access Card for Desktop */}
+              <div className="absolute top-4 right-4 transform rotate-3">
+                <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-lg shadow-lg border border-purple-200 min-w-max">
+                  <div className="text-center">
+                    <h3 className="text-lg font-bold text-purple-700 mb-2" style={{ fontFamily: 'cursive' }}>
+                      📸 Photo Gallery
+                    </h3>
+                    <p className="text-xs text-gray-600 mb-3 leading-relaxed" style={{ fontFamily: 'cursive' }}>
+                      Interactive polaroids you can drag & arrange!
+                    </p>
+                    <button
+                      onClick={handleShowGallery}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm font-bold"
+                      style={{ fontFamily: 'cursive' }}
+                    >
+                      Open Gallery ✨
+                    </button>
+                  </div>
+                </div>
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-purple-500 rounded-full shadow-md border border-purple-600"></div>
+              </div>
             </div>
-
-
-
           </div>
         </div>
         </div>
       </main>
-
-
 
       {/* Vinyl Record Player - Bottom Right - styled for bulletin board */}
       <div className="fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-20">
